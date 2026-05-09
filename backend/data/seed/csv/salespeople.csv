@@ -1,0 +1,6 @@
+id,name,territory_id,home_lat,home_lng,max_daily_stops
+sp-kl-central,Aina Rahman,terr-kl-central,3.139,101.6869,8
+sp-ampang,Daniel Tan,terr-ampang,3.1496,101.7611,8
+sp-pj,Mei Wong,terr-pj,3.1073,101.6067,8
+sp-shah-alam,Arif Hakim,terr-shah-alam,3.0738,101.5183,8
+sp-cheras,Priya Nair,terr-cheras,3.1056,101.7252,8

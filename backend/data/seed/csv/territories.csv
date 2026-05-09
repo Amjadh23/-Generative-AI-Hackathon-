@@ -1,0 +1,6 @@
+id,name,center_lat,center_lng,radius_km
+terr-kl-central,KL Central,3.139,101.6869,7.0
+terr-ampang,Ampang,3.1496,101.7611,6.0
+terr-pj,Petaling Jaya,3.1073,101.6067,7.0
+terr-shah-alam,Shah Alam,3.0738,101.5183,8.0
+terr-cheras,Cheras,3.1056,101.7252,6.5
