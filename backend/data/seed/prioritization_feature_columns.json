@@ -1,0 +1,17 @@
+{
+  "feature_columns": [
+    "segment_encoded",
+    "territory_id_encoded",
+    "avg_order_value_band_encoded",
+    "open_pipeline_band_encoded",
+    "last_visit_days",
+    "reorder_probability",
+    "past_order_count",
+    "total_order_value_band_encoded",
+    "days_since_last_order",
+    "visit_count",
+    "last_visit_outcome_encoded",
+    "distance_from_salesperson_home_km",
+    "nearby_customer_count"
+  ]
+}

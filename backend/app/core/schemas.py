@@ -11,9 +11,14 @@ class DayPlanStop(BaseModel):
     lat: float
     lng: float
     score: float = Field(ge=0)
+    visit_likelihood_score: float = Field(ge=0, le=1)
+    priority_class: str
+    recommended_action: str
+    top_reasons: list[str] = Field(default_factory=list)
     expected_return_rm: float = Field(ge=0)
     distance_from_previous_km: float = Field(ge=0)
     eta_minutes: int = Field(ge=0)
+    visit_duration_minutes: int = Field(ge=0, description="Estimated on-site visit time (Submodule 2).")
     reason: str
     focus: str
 
@@ -59,3 +64,33 @@ class AssistantResponse(BaseModel):
     intent: str
     related_customer_id: str | None = None
     suggestions: list[str] = Field(default_factory=list)
+
+
+class VisitRecapRequest(BaseModel):
+    customer_id: str
+    salesperson_id: str
+    transcript: str = Field(min_length=1, max_length=4000)
+    persist: bool = True
+
+
+class VisitRecapResponse(BaseModel):
+    visit_id: str | None = None
+    persisted: bool = False
+    summary: str
+    outcome: str
+    next_action: str
+    due_date: str | None = None
+    products_mentioned: list[str] = Field(default_factory=list)
+    sentiment: str
+    confidence: float = Field(ge=0, le=1)
+    raw_transcript: str
+
+
+class CustomerAssignmentPayload(BaseModel):
+    salesperson_id: str
+
+
+class CustomerAssignmentResult(BaseModel):
+    customer_id: str
+    salesperson_id: str
+    territory_id: str

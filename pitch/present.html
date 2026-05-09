@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RouteIQ — Pitch</title>
+    <style>
+      :root {
+        --hilti: #d2051e;
+        --hilti-dark: #8b1538;
+        --ink: #0f172a;
+        --muted: #64748b;
+        --bg: #fafafa;
+        --card: #ffffff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        min-height: 100vh;
+        overflow: hidden;
+      }
+      .deck {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 16px 56px;
+      }
+      .slide {
+        display: none;
+        width: min(960px, 100%);
+        min-height: min(540px, 78vh);
+        background: var(--card);
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+        border: 1px solid #e2e8f0;
+        padding: clamp(24px, 4vw, 48px);
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .slide.active {
+        display: flex;
+      }
+      .slide-title-brand {
+        position: absolute;
+        top: clamp(20px, 3vw, 28px);
+        left: clamp(20px, 3vw, 28px);
+        z-index: 2;
+      }
+      .slide-title-brand img {
+        display: block;
+        height: clamp(22px, 4vw, 32px);
+        width: auto;
+      }
+      .slide::after {
+        content: "";
+        position: absolute;
+        right: -80px;
+        bottom: -80px;
+        width: 200px;
+        height: 200px;
+        background: linear-gradient(135deg, var(--hilti) 0%, var(--hilti-dark) 100%);
+        opacity: 0.12;
+        border-radius: 32px;
+        transform: rotate(12deg);
+        pointer-events: none;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: clamp(1.85rem, 4.5vw, 2.75rem);
+        font-weight: 800;
+        color: var(--hilti-dark);
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        margin: 0 0 16px;
+        font-size: clamp(1.35rem, 3vw, 1.85rem);
+        font-weight: 800;
+        color: var(--hilti-dark);
+      }
+      .tag {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 999px;
+        background: rgba(210, 5, 30, 0.1);
+        color: var(--hilti-dark);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+      }
+      .sub {
+        margin: 0 0 24px;
+        font-size: clamp(1rem, 2.2vw, 1.2rem);
+        color: var(--muted);
+        max-width: 42em;
+        line-height: 1.5;
+      }
+      ul {
+        margin: 0;
+        padding-left: 1.2em;
+        line-height: 1.6;
+        font-size: clamp(0.95rem, 2vw, 1.08rem);
+      }
+      li + li {
+        margin-top: 10px;
+      }
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: clamp(0.88rem, 1.8vw, 1rem);
+        margin-top: 8px;
+      }
+      .table th,
+      .table td {
+        text-align: left;
+        padding: 12px 10px;
+        border-bottom: 1px solid #e2e8f0;
+        vertical-align: top;
+      }
+      .table th {
+        color: var(--hilti-dark);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .hint {
+        position: fixed;
+        bottom: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 3px;
+        background: var(--hilti);
+        transition: width 0.2s ease;
+        z-index: 10;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress" id="progress"></div>
+    <div class="deck">
+      <article class="slide active" data-i="0">
+        <div class="slide-title-brand" aria-hidden="true">
+          <img src="../frontend/src/assets/logo.png" alt="" width="120" height="32" />
+        </div>
+        <span class="tag">Hackathon 2026</span>
+        <h1>RouteIQ</h1>
+        <p class="sub">
+          AI sales visit copilot for Hilti field teams. The most <strong>valuable</strong> route — not just
+          the shortest.
+        </p>
+        <ul>
+          <li>Phone-first PWA: Today, Map, Customer</li>
+          <li>Voice → structured recap + Ask RouteIQ</li>
+          <li>Manager view: CRM signal vs real visits</li>
+        </ul>
+      </article>
+
+      <article class="slide" data-i="1">
+        <h2>The problem</h2>
+        <p class="sub">Reps optimize drive time. Managers need pipeline truth. CRM scores miss what just happened on site.</p>
+        <ul>
+          <li>Planning tools don’t rank <strong>visit value</strong> for the day.</li>
+          <li>Outcomes stay in people’s heads — not structured for the team.</li>
+          <li>Static scores don’t reflect <strong>satisfied visits</strong> and next steps.</li>
+        </ul>
+      </article>
+
+      <article class="slide" data-i="2">
+        <h2>What RouteIQ does</h2>
+        <ul>
+          <li><strong>Today + map</strong> — prioritized stops, expected return, one-tap navigate.</li>
+          <li><strong>AI in the field</strong> — speak a note, get a structured recap; ask grounded questions.</li>
+          <li><strong>Manager story</strong> — “before CRM-only” vs “after visits & recaps” on future potential.</li>
+        </ul>
+      </article>
+
+      <article class="slide" data-i="3">
+        <h2>Rep workflow</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Need</th>
+              <th>RouteIQ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Where to go</td>
+              <td>Value-ranked plan + map</td>
+            </tr>
+            <tr>
+              <td>Why this stop</td>
+              <td>Expected return + impact framing</td>
+            </tr>
+            <tr>
+              <td>Fast logging</td>
+              <td>Voice note → AI recap</td>
+            </tr>
+            <tr>
+              <td>On-site questions</td>
+              <td>Ask RIQ on your data</td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+
+      <article class="slide" data-i="4">
+        <h2>Intelligence layer</h2>
+        <ul>
+          <li><strong>RouteIQ score</strong> — heuristic blend of pipeline, behavior, and fit (demo-ready).</li>
+          <li><strong>Value-aware routing</strong> — practical stop order, not just shortest path.</li>
+          <li><strong>Line:</strong> Google Maps gets you there; RouteIQ tells you <em>why</em> this stop matters.</li>
+        </ul>
+      </article>
+
+      <article class="slide" data-i="5">
+        <h2>Voice recap &amp; Ask RIQ</h2>
+        <ul>
+          <li>Rep records a short note after the visit.</li>
+          <li>LLM (e.g. Ollama) extracts structured fields — less typing, more truth in CRM.</li>
+          <li>Assistant answers from app context — fewer generic hallucinations.</li>
+        </ul>
+      </article>
+
+      <article class="slide" data-i="6">
+        <h2>Manager dashboard</h2>
+        <p class="sub">Simple hackathon narrative: future potential looks low on CRM-only baseline; it rises when visits and recaps tell a satisfied, active story.</p>
+        <ul>
+          <li>Traceable weights: outcomes + recap rows + structured next steps.</li>
+          <li>Mobile-friendly — same shell as the rep app.</li>
+        </ul>
+      </article>
+
+      <article class="slide" data-i="7">
+        <h2>Stack</h2>
+        <ul>
+          <li>React + TypeScript PWA</li>
+          <li>FastAPI + SQLite (KL-style synthetic dataset, ~400 accounts)</li>
+          <li>MapLibre + routing for visual proof</li>
+          <li>Local LLM for recap + chat in the demo</li>
+        </ul>
+      </article>
+
+      <article class="slide" data-i="8">
+        <h2>Why Hilti</h2>
+        <ul>
+          <li>Premium relationships — scale <strong>quality</strong> of every visit.</li>
+          <li>Managers see lift from field behavior in one glance.</li>
+          <li>Architecture ready for real data sources later.</li>
+        </ul>
+      </article>
+
+      <article class="slide" data-i="9">
+        <span class="tag">Live demo</span>
+        <h1>Thank you</h1>
+        <p class="sub"><strong>2 min:</strong> Today → Customer recap → Settings → Manager before/after.</p>
+        <ul>
+          <li>RouteIQ — the valuable route. The visible pipeline.</li>
+        </ul>
+      </article>
+    </div>
+    <p class="hint">← → or Space · Home / End</p>
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      let i = 0;
+      const progress = document.getElementById("progress");
+
+      function show(n) {
+        i = ((n % slides.length) + slides.length) % slides.length;
+        slides.forEach((s, j) => s.classList.toggle("active", j === i));
+        progress.style.width = ((i + 1) / slides.length) * 100 + "%";
+      }
+
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") {
+          e.preventDefault();
+          show(i + 1);
+        }
+        if (e.key === "ArrowLeft" || e.key === "PageUp") {
+          e.preventDefault();
+          show(i - 1);
+        }
+        if (e.key === "Home") show(0);
+        if (e.key === "End") show(slides.length - 1);
+      });
+
+      let tx = null;
+      window.addEventListener(
+        "touchstart",
+        (e) => {
+          tx = e.changedTouches[0].clientX;
+        },
+        { passive: true },
+      );
+      window.addEventListener(
+        "touchend",
+        (e) => {
+          if (tx == null) return;
+          const dx = e.changedTouches[0].clientX - tx;
+          tx = null;
+          if (dx < -48) show(i + 1);
+          if (dx > 48) show(i - 1);
+        },
+        { passive: true },
+      );
+
+      show(0);
+    </script>
+  </body>
+</html>

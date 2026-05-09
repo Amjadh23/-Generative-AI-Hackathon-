@@ -1,0 +1,15 @@
+{
+  "reorder_probability": "This customer has a {percent_value}% reorder probability, which increased the predicted visit priority.",
+  "last_visit_days": "This customer has not been visited for {int_value} day(s), which may indicate a timely follow-up opportunity.",
+  "open_pipeline_band_encoded": "This customer's open pipeline is in the {band_value} range, and this contributed to the visit-likelihood score.",
+  "avg_order_value_band_encoded": "This customer's usual order value is in the {band_value} range, and this contributed to the visit-likelihood score.",
+  "total_order_value_band_encoded": "This customer's total historical order value is in the {band_value} range, and this contributed to the visit-likelihood score.",
+  "past_order_count": "This customer has placed {int_value} past order(s), showing existing buying history.",
+  "days_since_last_order": "This customer has not placed an order for {int_value} day(s).",
+  "visit_count": "This customer has been visited {int_value} time(s) before.",
+  "last_visit_outcome_encoded": "The previous visit outcome contributed to the model's visit-likelihood estimate.",
+  "distance_from_salesperson_home_km": "This customer is {value_rounded} km away from the salesperson's starting location.",
+  "nearby_customer_count": "There are {int_value} nearby customers in the same area.",
+  "segment_encoded": "This customer's segment contributed to the model's visit-likelihood estimate.",
+  "territory_id_encoded": "This customer's territory contributed to the model's visit-likelihood estimate."
+}

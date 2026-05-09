@@ -7,7 +7,12 @@ from app.core.schemas import DayPlan, DayPlanStop, OptimizationSummary
 from app.data.generate import DEFAULT_OUTPUT, seed_database
 from app.llm.explain import build_focus
 from app.ml.score import score_customer_row, top_customers_for_salesperson
-from app.routing.solve import RouteCandidate, build_baseline_route, optimize_route
+from app.routing.solve import (
+    RouteCandidate,
+    build_baseline_route,
+    estimate_visit_duration_minutes,
+    optimize_route,
+)
 
 BASELINE_SEED = 20260509
 
@@ -54,6 +59,11 @@ def build_day_plan(
             lat=customer_rows[scored.customer_id]["lat"],
             lng=customer_rows[scored.customer_id]["lng"],
             value_score=scored.score,
+            priority_class=scored.priority_class,
+            visit_duration_minutes=estimate_visit_duration_minutes(
+                str(customer_rows[scored.customer_id]["segment"]),
+                scored.priority_class,
+            ),
         )
         for scored in scored_customers
     ]
@@ -79,9 +89,14 @@ def build_day_plan(
                 lat=customer["lat"],
                 lng=customer["lng"],
                 score=score.score,
+                visit_likelihood_score=score.visit_likelihood_score,
+                priority_class=score.priority_class,
+                recommended_action=score.recommended_action,
+                top_reasons=list(score.top_reasons),
                 expected_return_rm=score.expected_return_rm,
                 distance_from_previous_km=route_stop.distance_from_previous_km,
                 eta_minutes=route_stop.eta_minutes,
+                visit_duration_minutes=route_stop.visit_duration_minutes,
                 reason=score.reason,
                 focus=build_focus(route_stop.customer_id, database_path),
             )
@@ -130,15 +145,22 @@ def _build_optimization_summary(
         )
 
     baseline_rows = rng.sample(all_customer_rows, sample_size)
-    baseline_candidates = [
-        RouteCandidate(
-            customer_id=row["id"],
-            lat=row["lat"],
-            lng=row["lng"],
-            value_score=score_customer_row(row).score,
+    baseline_candidates: list[RouteCandidate] = []
+    for row in baseline_rows:
+        sc = score_customer_row(row)
+        baseline_candidates.append(
+            RouteCandidate(
+                customer_id=row["id"],
+                lat=row["lat"],
+                lng=row["lng"],
+                value_score=sc.score,
+                priority_class=sc.priority_class,
+                visit_duration_minutes=estimate_visit_duration_minutes(
+                    str(row["segment"]),
+                    sc.priority_class,
+                ),
+            )
         )
-        for row in baseline_rows
-    ]
 
     baseline_route = build_baseline_route(
         baseline_candidates,

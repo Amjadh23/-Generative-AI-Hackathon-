@@ -4,6 +4,7 @@ import { AppHeader } from './components/AppHeader'
 import { CustomerIcon, MapIcon, SettingsIcon, TodayIcon } from './components/Icon'
 import { Onboarding } from './components/Onboarding'
 import { CustomerDetailPage } from './pages/CustomerDetailPage'
+import { ManagerPage } from './pages/ManagerPage'
 import { MapPage } from './pages/MapPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { TodayPage } from './pages/TodayPage'
@@ -17,7 +18,7 @@ import {
   fetchTerritory,
 } from './lib/api'
 
-type View = 'today' | 'map' | 'customer' | 'settings'
+type View = 'today' | 'map' | 'customer' | 'settings' | 'manager'
 
 type NavItem = {
   id: View
@@ -91,69 +92,76 @@ function App() {
   }
 
   return (
-    <main className="app-shell">
+    <main className={view === 'manager' ? 'app-shell app-shell--manager' : 'app-shell'}>
       <Onboarding />
       <AppHeader
         salespersonName={activeSalesperson?.name}
         territoryName={activeSalesperson?.territory_name}
       />
-      {view === 'today' ? (
-        <TodayPage
-          dayPlan={dayPlan}
-          error={error}
-          loading={loading}
-          onOpenMap={() => setView('map')}
-          onSelectCustomer={onSelectCustomer}
-          salespersonName={activeSalesperson?.name ?? 'Salesperson'}
-          territoryName={activeSalesperson?.territory_name ?? 'Territory'}
-        />
-      ) : null}
+      {view === 'manager' ? (
+        <ManagerPage onBack={() => setView('settings')} />
+      ) : (
+        <>
+          {view === 'today' ? (
+            <TodayPage
+              dayPlan={dayPlan}
+              error={error}
+              loading={loading}
+              onOpenMap={() => setView('map')}
+              onSelectCustomer={onSelectCustomer}
+              salespersonName={activeSalesperson?.name ?? 'Salesperson'}
+              territoryName={activeSalesperson?.territory_name ?? 'Territory'}
+            />
+          ) : null}
 
-      {view === 'map' ? (
-        <MapPage dayPlan={dayPlan} onSelectCustomer={onSelectCustomer} territory={territory} />
-      ) : null}
+          {view === 'map' ? (
+            <MapPage dayPlan={dayPlan} onSelectCustomer={onSelectCustomer} territory={territory} />
+          ) : null}
 
-      {view === 'customer' ? (
-        selectedCustomerId ? (
-          <CustomerDetailPage
-            customerId={selectedCustomerId}
-            onAfterVisitLogged={() => loadPlan(salespersonId)}
-            onBack={() => setView('today')}
-            salespersonId={salespersonId}
-          />
-        ) : (
-          <section className="empty-state">
-            <p>Select a customer from Today or the Map to see details.</p>
-          </section>
-        )
-      ) : null}
+          {view === 'customer' ? (
+            selectedCustomerId ? (
+              <CustomerDetailPage
+                customerId={selectedCustomerId}
+                onAfterVisitLogged={() => loadPlan(salespersonId)}
+                onBack={() => setView('today')}
+                salespersonId={salespersonId}
+              />
+            ) : (
+              <section className="empty-state">
+                <p>Select a customer from Today or the Map to see details.</p>
+              </section>
+            )
+          ) : null}
 
-      {view === 'settings' ? (
-        <SettingsPage
-          onReplan={() => loadPlan(salespersonId)}
-          onSelectSalesperson={onSelectSalesperson}
-          salespeople={salespeople}
-          selectedSalespersonId={salespersonId}
-        />
-      ) : null}
+          {view === 'settings' ? (
+            <SettingsPage
+              onOpenManager={() => setView('manager')}
+              onReplan={() => loadPlan(salespersonId)}
+              onSelectSalesperson={onSelectSalesperson}
+              salespeople={salespeople}
+              selectedSalespersonId={salespersonId}
+            />
+          ) : null}
 
-      <nav aria-label="Main navigation" className="bottom-nav">
-        {NAV_ITEMS.map((item) => {
-          const active = view === item.id
-          const ItemIcon = item.Icon
-          return (
-            <button
-              aria-current={active ? 'page' : undefined}
-              key={item.id}
-              onClick={() => setView(item.id)}
-              type="button"
-            >
-              <ItemIcon size={22} />
-              <span>{item.label}</span>
-            </button>
-          )
-        })}
-      </nav>
+          <nav aria-label="Main navigation" className="bottom-nav">
+            {NAV_ITEMS.map((item) => {
+              const active = view === item.id
+              const ItemIcon = item.Icon
+              return (
+                <button
+                  aria-current={active ? 'page' : undefined}
+                  key={item.id}
+                  onClick={() => setView(item.id)}
+                  type="button"
+                >
+                  <ItemIcon size={22} />
+                  <span>{item.label}</span>
+                </button>
+              )
+            })}
+          </nav>
+        </>
+      )}
     </main>
   )
 }

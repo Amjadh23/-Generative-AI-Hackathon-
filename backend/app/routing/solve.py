@@ -4,6 +4,24 @@ import math
 from dataclasses import dataclass
 from itertools import permutations
 
+# On-site time by segment (Submodule 2: estimated visit duration for scheduling).
+VISIT_MINUTES_BY_SEGMENT: dict[str, int] = {
+    "project_site": 45,
+    "distributor": 25,
+    "maintenance": 35,
+}
+DEFAULT_VISIT_MINUTES = 35
+
+
+def estimate_visit_duration_minutes(segment: str, priority_class: str) -> int:
+    """Heuristic visit length: segment base, nudged by Submodule 1 priority_class."""
+    base = VISIT_MINUTES_BY_SEGMENT.get(segment, DEFAULT_VISIT_MINUTES)
+    if priority_class == "High":
+        return min(60, base + 5)
+    if priority_class == "Low":
+        return max(20, base - 5)
+    return base
+
 
 @dataclass(frozen=True)
 class RouteCandidate:
@@ -11,6 +29,8 @@ class RouteCandidate:
     lat: float
     lng: float
     value_score: float
+    priority_class: str = "Medium"
+    visit_duration_minutes: int = DEFAULT_VISIT_MINUTES
 
 
 @dataclass(frozen=True)
@@ -19,6 +39,7 @@ class RouteStop:
     sequence: int
     distance_from_previous_km: float
     eta_minutes: int
+    visit_duration_minutes: int
 
 
 @dataclass(frozen=True)
@@ -59,11 +80,14 @@ def _greedy_value_aware(
     total_distance = 0.0
 
     while remaining and len(selected) < max_stops:
-        next_candidate = max(
-            remaining,
-            key=lambda candidate: candidate.value_score
-            / max(0.8, haversine_km(current_lat, current_lng, candidate.lat, candidate.lng)),
-        )
+        clat, clng = current_lat, current_lng
+
+        def _marginal_value(candidate: RouteCandidate, *, _clat: float = clat, _clng: float = clng) -> float:
+            travel_km = haversine_km(_clat, _clng, candidate.lat, candidate.lng)
+            travel_min = float(estimate_eta_minutes(travel_km))
+            return candidate.value_score / max(1.0, travel_min + float(candidate.visit_duration_minutes))
+
+        next_candidate = max(remaining, key=_marginal_value)
         total_distance += haversine_km(current_lat, current_lng, next_candidate.lat, next_candidate.lng)
         selected.append(next_candidate)
         current_lat = next_candidate.lat
@@ -83,6 +107,23 @@ def _route_total_distance(
     current_lng = start_lng
     for candidate in sequence:
         total += haversine_km(current_lat, current_lng, candidate.lat, candidate.lng)
+        current_lat = candidate.lat
+        current_lng = candidate.lng
+    return total
+
+
+def _route_total_time_minutes(
+    sequence: tuple[RouteCandidate, ...],
+    start_lat: float,
+    start_lng: float,
+) -> float:
+    """Travel time between stops plus on-site duration at each stop (Submodule 2)."""
+    total = 0.0
+    current_lat = start_lat
+    current_lng = start_lng
+    for candidate in sequence:
+        dist = haversine_km(current_lat, current_lng, candidate.lat, candidate.lng)
+        total += float(estimate_eta_minutes(dist)) + float(candidate.visit_duration_minutes)
         current_lat = candidate.lat
         current_lng = candidate.lng
     return total
@@ -108,6 +149,7 @@ def _build_route_plan(
                 sequence=index,
                 distance_from_previous_km=round(distance, 2),
                 eta_minutes=estimate_eta_minutes(distance),
+                visit_duration_minutes=candidate.visit_duration_minutes,
             )
         )
         current_lat = candidate.lat
@@ -138,15 +180,15 @@ def optimize_route(
         return RoutePlan(stops=[], total_distance_km=0.0, routes_evaluated=0)
 
     best_sequence = list(selected)
-    best_distance = _route_total_distance(tuple(best_sequence), start_lat, start_lng)
+    best_time = _route_total_time_minutes(tuple(best_sequence), start_lat, start_lng)
     routes_evaluated = 1
 
     if len(selected) <= 9:
         for permutation in permutations(selected):
             routes_evaluated += 1
-            distance = _route_total_distance(permutation, start_lat, start_lng)
-            if distance < best_distance:
-                best_distance = distance
+            total_min = _route_total_time_minutes(permutation, start_lat, start_lng)
+            if total_min < best_time:
+                best_time = total_min
                 best_sequence = list(permutation)
 
     return _build_route_plan(best_sequence, start_lat, start_lng, routes_evaluated)

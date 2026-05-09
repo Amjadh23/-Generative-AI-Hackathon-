@@ -244,6 +244,9 @@ def seed_database(output_path: Path = DEFAULT_OUTPUT, customers_per_territory: i
 
         connection.commit()
 
+    from app.ml.prioritization.engine import train_and_save_artifacts
+
+    train_and_save_artifacts(output_path)
     return output_path
 
 

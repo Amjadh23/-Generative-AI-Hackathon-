@@ -1,0 +1,59 @@
+{
+  "encoders": {
+    "segment": {
+      "contractor": 0,
+      "distributor": 1,
+      "maintenance": 2,
+      "project_site": 3
+    },
+    "territory_id": {
+      "terr-ampang": 0,
+      "terr-cheras": 1,
+      "terr-kl-central": 2,
+      "terr-pj": 3,
+      "terr-shah-alam": 4
+    },
+    "last_visit_outcome": {
+      "closed": 0,
+      "follow_up": 1,
+      "no_interest": 2,
+      "order": 3,
+      "none": 4
+    }
+  },
+  "band_legends": {
+    "open_pipeline_band_encoded": [
+      "under RM5k",
+      "RM5k\u2013RM15k",
+      "RM15k\u2013RM30k",
+      "above RM30k"
+    ],
+    "avg_order_value_band_encoded": [
+      "under RM3k",
+      "RM3k\u2013RM7k",
+      "RM7k\u2013RM12k",
+      "above RM12k"
+    ],
+    "total_order_value_band_encoded": [
+      "under RM10k",
+      "RM10k\u2013RM30k",
+      "RM30k\u2013RM80k",
+      "above RM80k"
+    ]
+  },
+  "feature_columns": [
+    "segment_encoded",
+    "territory_id_encoded",
+    "avg_order_value_band_encoded",
+    "open_pipeline_band_encoded",
+    "last_visit_days",
+    "reorder_probability",
+    "past_order_count",
+    "total_order_value_band_encoded",
+    "days_since_last_order",
+    "visit_count",
+    "last_visit_outcome_encoded",
+    "distance_from_salesperson_home_km",
+    "nearby_customer_count"
+  ]
+}

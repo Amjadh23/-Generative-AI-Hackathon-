@@ -6,7 +6,7 @@ Google Maps tells the salesperson the shortest route. RouteIQ tells the salesper
 
 ## What is built
 
-- SDD artifacts under `specs/`.
+- SDD artifacts under `specs/`, including **Submodule 1 (prioritization + explainability):** [`specs/submodule-1-prioritization-architecture.md`](specs/submodule-1-prioritization-architecture.md).
 - FastAPI backend with contract-first demo endpoints.
 - React + TypeScript PWA shell with install metadata.
 - Docker Compose setup for local demo.

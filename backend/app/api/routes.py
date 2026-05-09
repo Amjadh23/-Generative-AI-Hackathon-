@@ -5,15 +5,22 @@ from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException, Query
 
+from app.admin.service import assign_customer_to_salesperson, build_manager_dashboard
 from app.assistant.router import answer_question
 from app.core.schemas import (
     AssistantRequest,
     AssistantResponse,
+    CustomerAssignmentPayload,
+    CustomerAssignmentResult,
     DayPlan,
     VisitCreate,
     VisitCreated,
+    VisitRecapRequest,
+    VisitRecapResponse,
 )
 from app.data.generate import DEFAULT_OUTPUT, seed_database
+from app.llm.client import LLMError
+from app.llm.recap import build_recap
 from app.ml.score import score_customer
 from app.recommend.service import build_day_plan
 
@@ -90,14 +97,19 @@ def get_customer(customer_id: str) -> dict[str, object]:
         "assigned_salesperson_id": customer["assigned_salesperson_id"],
         "lat": customer["lat"],
         "lng": customer["lng"],
-        "priority": customer["priority"],
+        "crm_priority": customer["priority"],
         "avg_order_value_rm": customer["avg_order_value_rm"],
         "open_pipeline_rm": customer["open_pipeline_rm"],
         "last_visit_days": customer["last_visit_days"],
         "reorder_probability": customer["reorder_probability"],
         "score": score.score,
+        "visit_likelihood_score": score.visit_likelihood_score,
+        "priority_class": score.priority_class,
+        "recommended_action": score.recommended_action,
         "expected_return_rm": score.expected_return_rm,
         "score_contributions": score.contributions,
+        "top_reasons": score.top_reasons,
+        "xgboost_explanation": score.xgboost_explanation_payload,
         "visits": [dict(visit) for visit in visits],
         "orders": [dict(order) for order in orders],
     }
@@ -179,6 +191,50 @@ def assistant_ask(payload: AssistantRequest) -> AssistantResponse:
         )
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except LLMError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+
+@router.post("/visits/recap", response_model=VisitRecapResponse)
+def visits_recap(payload: VisitRecapRequest) -> VisitRecapResponse:
+    database_path = _ensure_database()
+    with sqlite3.connect(database_path) as connection:
+        exists = connection.execute(
+            "SELECT 1 FROM customers WHERE id = ?", (payload.customer_id,)
+        ).fetchone()
+    if exists is None:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    try:
+        return build_recap(
+            customer_id=payload.customer_id,
+            salesperson_id=payload.salesperson_id,
+            transcript=payload.transcript,
+            persist=payload.persist,
+            database_path=database_path,
+        )
+    except LLMError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+
+@router.get("/admin/dashboard")
+def admin_dashboard() -> dict[str, object]:
+    return build_manager_dashboard(_ensure_database())
+
+
+@router.patch("/admin/customers/{customer_id}/assignment", response_model=CustomerAssignmentResult)
+def admin_assign_customer(
+    customer_id: str,
+    payload: CustomerAssignmentPayload,
+) -> CustomerAssignmentResult:
+    try:
+        result = assign_customer_to_salesperson(
+            customer_id=customer_id,
+            salesperson_id=payload.salesperson_id,
+            database_path=_ensure_database(),
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return CustomerAssignmentResult(**result)
 
 
 @router.get("/salespeople")

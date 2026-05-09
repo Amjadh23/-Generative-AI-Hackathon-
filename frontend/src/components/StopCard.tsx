@@ -13,7 +13,9 @@ export function StopCard({ stop, onSelect }: StopCardProps) {
       <div className="stop-body">
         <div className="stop-title">
           <h3>{stop.customer_name}</h3>
-          <span>{Math.round(stop.score)}</span>
+          <span>
+            {stop.priority_class} · {Math.round(stop.score)}
+          </span>
         </div>
         <p className="stop-segment">{formatSegment(stop.segment)}</p>
         <p>{stop.focus}</p>

@@ -1,12 +1,14 @@
-"""Intent-routed assistant for the in-app mascot chat.
+"""LLM-backed assistant for the in-app mascot chat.
 
-Rule-based for hackathon reliability (works without any API keys), but the
-``answer_question`` boundary is designed so a real LLM can be slotted in later
-without changing the API contract.
+Strategy: build a grounded **fact sheet** from the real ``DayPlan`` + customer
+score, hand it to the LLM as the system prompt, and let the LLM phrase the
+answer in natural English. The LLM is forbidden from inventing numbers — it
+only paraphrases the facts we provide.
 """
 
 from __future__ import annotations
 
+import json
 import sqlite3
 from dataclasses import dataclass
 from datetime import date
@@ -14,7 +16,7 @@ from pathlib import Path
 
 from app.core.schemas import AssistantResponse, DayPlan, DayPlanStop
 from app.data.generate import DEFAULT_OUTPUT
-from app.llm.explain import build_focus
+from app.llm.client import LLMError, chat_json
 from app.ml.score import score_customer
 from app.recommend.service import build_day_plan
 
@@ -26,6 +28,26 @@ DEFAULT_SUGGESTIONS = [
     "Show me the highest-value stop today.",
     "Summarise today's plan.",
 ]
+
+SYSTEM_PROMPT = """You are RIQ, the friendly AI sales copilot inside Hilti RouteIQ.
+
+You are talking to a Hilti field salesperson on their phone, on the road. Be
+concise (1-3 sentences), warm, action-oriented, and professional. Refer to
+yourself as RIQ when natural. Never invent customer names, distances, ringgit
+amounts, or scores; use ONLY the facts in the FACTS block. If the user asks
+something the facts don't cover, say so briefly and suggest a related question
+they can ask.
+
+Always respond with strict JSON in this exact shape and nothing else:
+{
+  "answer": "<your reply, plain text, no markdown>",
+  "intent": "<one of: next_stop, distance, why, focus, best_stop, list_stops, summary, greeting, fallback>",
+  "related_customer_id": "<a customer_id from the facts, or null>",
+  "suggestions": ["<short follow-up 1>", "<short follow-up 2>", "<short follow-up 3>"]
+}
+
+Currency is RM (Malaysian ringgit). Distances are in km. Keep suggestions short
+(under 7 words each)."""
 
 
 @dataclass
@@ -55,202 +77,113 @@ class AssistantContext:
         return None
 
 
-def _format_rm(value: float) -> str:
-    return f"RM{value:,.0f}"
+def _stop_fact(stop: DayPlanStop) -> dict[str, object]:
+    return {
+        "sequence": stop.sequence,
+        "customer_id": stop.customer_id,
+        "customer_name": stop.customer_name,
+        "segment": stop.segment,
+        "score": round(stop.score, 1),
+        "visit_likelihood_score": round(stop.visit_likelihood_score, 4),
+        "priority_class": stop.priority_class,
+        "recommended_action": stop.recommended_action,
+        "top_reasons": stop.top_reasons,
+        "expected_return_rm": round(stop.expected_return_rm),
+        "distance_from_previous_km": round(stop.distance_from_previous_km, 2),
+        "eta_minutes": stop.eta_minutes,
+        "visit_duration_minutes": stop.visit_duration_minutes,
+        "reason": stop.reason,
+        "focus": stop.focus,
+    }
 
 
-def _stop_label(stop: DayPlanStop) -> str:
-    return f"#{stop.sequence} {stop.customer_name}"
-
-
-def _matches(question: str, keywords: list[str]) -> bool:
-    return any(keyword in question for keyword in keywords)
-
-
-def _next_stop_answer(ctx: AssistantContext) -> AssistantResponse:
-    nxt = ctx.next_stop
-    if nxt is None:
-        return AssistantResponse(
-            answer="You've cleared today's route — nice work. Want a summary?",
-            intent="next_stop",
-            suggestions=["Summarise today's plan."],
-        )
-    answer = (
-        f"Next is {_stop_label(nxt)} ({nxt.segment}). "
-        f"{nxt.distance_from_previous_km:.1f} km · ~{nxt.eta_minutes} min from the previous stop. "
-        f"Expected return {_format_rm(nxt.expected_return_rm)}."
-    )
-    return AssistantResponse(
-        answer=answer,
-        intent="next_stop",
-        related_customer_id=nxt.customer_id,
-        suggestions=["Why this customer?", "What should I focus on?"],
-    )
-
-
-def _distance_answer(ctx: AssistantContext) -> AssistantResponse:
-    target = ctx.current_stop or ctx.next_stop
-    if target is None:
-        return AssistantResponse(
-            answer="No stops loaded yet — open Today and we'll plan a route.",
-            intent="distance",
-        )
-    answer = (
-        f"{_stop_label(target)} is {target.distance_from_previous_km:.1f} km "
-        f"from the previous point — about {target.eta_minutes} minutes by road."
-    )
-    return AssistantResponse(
-        answer=answer,
-        intent="distance",
-        related_customer_id=target.customer_id,
-        suggestions=["What's after that?", "Why this customer?"],
-    )
-
-
-def _why_answer(ctx: AssistantContext) -> AssistantResponse:
-    target = ctx.current_stop or ctx.next_stop
-    if target is None:
-        return AssistantResponse(
-            answer="Open a stop on the map and I'll explain why it made the cut.",
-            intent="why",
-        )
-    score = score_customer(target.customer_id, ctx.database_path)
-    top_factors = sorted(score.contributions.items(), key=lambda item: item[1], reverse=True)[:2]
-    factor_text = " and ".join(name.replace("_", " ") for name, _ in top_factors)
-    answer = (
-        f"{target.customer_name} scored {score.score:.0f}/100. "
-        f"Top drivers: {factor_text}. {target.reason}"
-    )
-    return AssistantResponse(
-        answer=answer,
-        intent="why",
-        related_customer_id=target.customer_id,
-        suggestions=["What should I focus on?", "What's my next stop?"],
-    )
-
-
-def _focus_answer(ctx: AssistantContext) -> AssistantResponse:
-    target = ctx.current_stop or ctx.next_stop
-    if target is None:
-        return AssistantResponse(
-            answer="Pick a customer and I'll suggest what to lead with.",
-            intent="focus",
-        )
-    focus = target.focus or build_focus(target.customer_id, ctx.database_path)
-    answer = f"For {target.customer_name}: {focus}"
-    return AssistantResponse(
-        answer=answer,
-        intent="focus",
-        related_customer_id=target.customer_id,
-        suggestions=["Why this customer?", "What's my next stop?"],
-    )
-
-
-def _best_stop_answer(ctx: AssistantContext) -> AssistantResponse:
-    if not ctx.plan.stops:
-        return AssistantResponse(answer="No stops loaded yet.", intent="best_stop")
-    best = max(ctx.plan.stops, key=lambda stop: stop.expected_return_rm)
-    answer = (
-        f"Highest-value stop today is {_stop_label(best)} "
-        f"at {_format_rm(best.expected_return_rm)} expected return. {best.reason}"
-    )
-    return AssistantResponse(
-        answer=answer,
-        intent="best_stop",
-        related_customer_id=best.customer_id,
-        suggestions=["What should I focus on?", "How far to it?"],
-    )
-
-
-def _list_answer(ctx: AssistantContext) -> AssistantResponse:
-    if not ctx.plan.stops:
-        return AssistantResponse(answer="No stops on the route yet.", intent="list_stops")
-    lines = [
-        f"{stop.sequence}. {stop.customer_name} — {_format_rm(stop.expected_return_rm)}"
-        for stop in ctx.plan.stops
-    ]
-    answer = "Today's route:\n" + "\n".join(lines)
-    return AssistantResponse(
-        answer=answer,
-        intent="list_stops",
-        suggestions=["Summarise today's plan.", "What's my next stop?"],
-    )
-
-
-def _summary_answer(ctx: AssistantContext) -> AssistantResponse:
+def _build_fact_sheet(ctx: AssistantContext) -> str:
     plan = ctx.plan
     summary = plan.optimization_summary
-    base = (
-        f"{len(plan.stops)} stops · {plan.total_distance_km:.1f} km · "
-        f"{_format_rm(plan.total_expected_return_rm)} expected return."
-    )
+    facts: dict[str, object] = {
+        "today": plan.date.isoformat(),
+        "salesperson_id": plan.salesperson_id,
+        "total_stops": len(plan.stops),
+        "total_distance_km": round(plan.total_distance_km, 2),
+        "total_expected_return_rm": round(plan.total_expected_return_rm),
+        "stops": [_stop_fact(stop) for stop in plan.stops],
+    }
     if summary:
-        base += (
-            f" That's +{summary.value_uplift_pct:.0f}% value vs a baseline route, "
-            f"and {summary.distance_saved_km:.1f} km saved. "
-            f"Picked from {summary.routes_evaluated:,} evaluated orderings."
-        )
+        facts["optimization"] = {
+            "routes_evaluated": summary.routes_evaluated,
+            "value_uplift_pct": summary.value_uplift_pct,
+            "value_gain_rm": round(summary.value_gain_rm),
+            "distance_saved_km": round(summary.distance_saved_km, 2),
+            "baseline_distance_km": round(summary.baseline_distance_km, 2),
+            "baseline_expected_return_rm": round(summary.baseline_expected_return_rm),
+        }
+
+    target = ctx.current_stop or ctx.next_stop
+    if target is not None:
+        score = score_customer(target.customer_id, ctx.database_path)
+        xgb = score.xgboost_explanation_payload or {}
+        top_payload = xgb.get("top_priority_reasons") if isinstance(xgb, dict) else None
+        facts["focused_customer"] = {
+            "customer_id": target.customer_id,
+            "customer_name": target.customer_name,
+            "is_next_stop": target.customer_id == (ctx.next_stop.customer_id if ctx.next_stop else None),
+            "is_current_stop": ctx.current_stop is not None
+            and target.customer_id == ctx.current_stop.customer_id,
+            "score": round(score.score, 1),
+            "visit_likelihood_score": round(score.visit_likelihood_score, 4),
+            "priority_class": score.priority_class,
+            "recommended_action": score.recommended_action,
+            "top_reasons": list(score.top_reasons),
+            "xgboost_top_priority_reasons": list(top_payload)
+            if isinstance(top_payload, list)
+            else [],
+            "expected_return_rm": round(score.expected_return_rm),
+            "score_contributions": {
+                key: round(value, 3) for key, value in score.contributions.items()
+            },
+            "reason": score.reason,
+            "focus": target.focus,
+            "distance_from_previous_km": round(target.distance_from_previous_km, 2),
+            "eta_minutes": target.eta_minutes,
+        }
+    return json.dumps(facts, ensure_ascii=False, indent=2)
+
+
+def _coerce_response(payload: dict[str, object], ctx: AssistantContext) -> AssistantResponse:
+    answer = str(payload.get("answer") or "").strip()
+    if not answer:
+        raise LLMError("LLM response missing 'answer' field.")
+
+    intent = str(payload.get("intent") or "fallback").strip().lower()
+    valid_intents = {
+        "next_stop", "distance", "why", "focus", "best_stop",
+        "list_stops", "summary", "greeting", "fallback",
+    }
+    if intent not in valid_intents:
+        intent = "fallback"
+
+    related = payload.get("related_customer_id")
+    related_id: str | None = None
+    if isinstance(related, str) and related:
+        valid_ids = {stop.customer_id for stop in ctx.plan.stops}
+        if related in valid_ids:
+            related_id = related
+
+    suggestions_raw = payload.get("suggestions") or []
+    suggestions: list[str] = []
+    if isinstance(suggestions_raw, list):
+        for item in suggestions_raw[:4]:
+            if isinstance(item, str) and item.strip():
+                suggestions.append(item.strip())
+    if not suggestions:
+        suggestions = DEFAULT_SUGGESTIONS[:3]
+
     return AssistantResponse(
-        answer=base,
-        intent="summary",
-        suggestions=["What's my next stop?", "Highest-value stop today?"],
+        answer=answer,
+        intent=intent,
+        related_customer_id=related_id,
+        suggestions=suggestions,
     )
-
-
-def _greeting_answer(_: AssistantContext) -> AssistantResponse:
-    return AssistantResponse(
-        answer="Hi, I'm RIQ. Ask me about your stops, distances, or what to focus on.",
-        intent="greeting",
-        suggestions=DEFAULT_SUGGESTIONS[:3],
-    )
-
-
-def _fallback_answer(ctx: AssistantContext) -> AssistantResponse:
-    nxt = ctx.next_stop
-    hint = (
-        f" Your next stop is {_stop_label(nxt)} — try asking 'why this customer?' or 'how far?'"
-        if nxt is not None
-        else ""
-    )
-    return AssistantResponse(
-        answer="I can help with stops, distances, focus tips, and the day's value." + hint,
-        intent="fallback",
-        suggestions=DEFAULT_SUGGESTIONS,
-    )
-
-
-def _classify(question: str) -> str:
-    q = question.lower().strip()
-    if _matches(q, ["hi", "hello", "hey", "yo "]) and len(q) <= 12:
-        return "greeting"
-    if _matches(q, ["how far", "distance", "eta", "how long", "minutes away", "km away"]):
-        return "distance"
-    if _matches(q, ["next stop", "what's next", "after this", "after that", "where next", "where to"]):
-        return "next_stop"
-    if _matches(q, ["why", "reason", "explain"]):
-        return "why"
-    if _matches(q, ["focus", "pitch", "talk about", "discuss", "lead with", "say to"]):
-        return "focus"
-    if _matches(q, ["best", "top", "highest", "biggest", "most valuable", "richest"]):
-        return "best_stop"
-    if _matches(q, ["list", "all stops", "show all", "remaining", "left", "schedule"]):
-        return "list_stops"
-    if _matches(q, ["summary", "summarise", "summarize", "total", "overview", "today's plan"]):
-        return "summary"
-    return "fallback"
-
-
-_HANDLERS = {
-    "greeting": _greeting_answer,
-    "distance": _distance_answer,
-    "next_stop": _next_stop_answer,
-    "why": _why_answer,
-    "focus": _focus_answer,
-    "best_stop": _best_stop_answer,
-    "list_stops": _list_answer,
-    "summary": _summary_answer,
-    "fallback": _fallback_answer,
-}
 
 
 def answer_question(
@@ -283,5 +216,12 @@ def answer_question(
         database_path=database_path,
     )
 
-    intent = _classify(question)
-    return _HANDLERS[intent](ctx)
+    fact_sheet = _build_fact_sheet(ctx)
+    user_prompt = (
+        "FACTS (JSON, the only source of truth — do not invent anything beyond this):\n"
+        f"{fact_sheet}\n\n"
+        f"USER QUESTION:\n{question.strip()}"
+    )
+
+    raw = chat_json(SYSTEM_PROMPT, user_prompt, temperature=0.3)
+    return _coerce_response(raw, ctx)

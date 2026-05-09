@@ -1,5 +1,8 @@
 import type { SVGProps } from 'react'
 
+import hiltiMarkUrl from '../assets/hilti.png'
+import routeiqWordmarkUrl from '../assets/logo.png'
+
 type IconProps = SVGProps<SVGSVGElement> & {
   size?: number
 }
@@ -57,6 +60,17 @@ export function SettingsIcon(props: IconProps) {
     <BaseIcon {...props}>
       <circle cx="12" cy="12" r="3" />
       <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9c.3.6.9 1 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z" />
+    </BaseIcon>
+  )
+}
+
+export function TeamIcon(props: IconProps) {
+  return (
+    <BaseIcon {...props}>
+      <path d="M8.5 11a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
+      <path d="M15.5 11a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
+      <path d="M3 19c1.2-3.5 3.7-6 7-6s5.8 2.5 7 6" />
+      <path d="M14 19c1.2-3.5 3.7-6 7-6" />
     </BaseIcon>
   )
 }
@@ -205,31 +219,29 @@ export function ManeuverIcon({ modifier, size = 24, type, ...rest }: ManeuverIco
 }
 
 export function HiltiLogo({ height = 24 }: { height?: number }) {
-  const width = (height * 56) / 24
   return (
-    <svg
-      aria-label="Hilti"
+    <img
+      alt="Hilti"
+      className="hilti-logo"
       height={height}
-      role="img"
-      viewBox="0 0 56 24"
-      width={width}
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <rect fill="#d2051e" height="24" width="56" />
-      <text
-        dominantBaseline="central"
-        fill="#ffffff"
-        fontFamily='"Arial Black", "Helvetica Neue", Helvetica, Arial, sans-serif'
-        fontSize="15"
-        fontWeight="900"
-        letterSpacing="-0.5"
-        textAnchor="middle"
-        x="28"
-        y="13"
-      >
-        HILTI
-      </text>
-    </svg>
+      loading="lazy"
+      src={hiltiMarkUrl}
+      style={{ height, width: 'auto', display: 'block', objectFit: 'contain' }}
+    />
+  )
+}
+
+/** Red RouteIQ wordmark PNG — use in header; app icon stays `RouteIQLogo`. */
+export function RouteIQWordmark({ height = 22 }: { height?: number }) {
+  return (
+    <img
+      alt="RouteIQ"
+      className="routeiq-wordmark"
+      height={height}
+      loading="lazy"
+      src={routeiqWordmarkUrl}
+      style={{ height, width: 'auto', display: 'block', objectFit: 'contain' }}
+    />
   )
 }
 

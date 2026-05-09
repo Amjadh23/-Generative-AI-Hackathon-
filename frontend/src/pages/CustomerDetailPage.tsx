@@ -2,13 +2,20 @@ import { useEffect, useState } from 'react'
 
 import { BackIcon, CheckIcon, NavigateIcon } from '../components/Icon'
 import { MascotTip } from '../components/MascotTip'
+import { VisitRecapPanel } from '../components/VisitRecap'
 import {
   type CustomerDetail,
   fetchCustomer,
   logVisit,
   type VisitOutcome,
 } from '../lib/api'
-import { currencyFormatter, formatSegment, googleMapsUrl, percentFormatter } from '../lib/format'
+import {
+  currencyFormatter,
+  displayRecommendedAction,
+  formatSegment,
+  googleMapsUrl,
+  percentFormatter,
+} from '../lib/format'
 
 type CustomerDetailPageProps = {
   customerId: string
@@ -91,7 +98,8 @@ export function CustomerDetailPage({
             <p className="eyebrow">{formatSegment(customer.segment)}</p>
             <h2>{customer.name}</h2>
             <p className="customer-meta">
-              Priority {customer.priority} · {customer.last_visit_days} days since last visit
+              RouteIQ {customer.priority_class} · {(customer.visit_likelihood_score * 100).toFixed(0)}% visit
+              likelihood · {customer.last_visit_days} days since last visit
             </p>
             <a
               className="primary-action customer-navigate"
@@ -106,8 +114,14 @@ export function CustomerDetailPage({
 
           <section aria-label="Score signals" className="summary-grid">
             <article>
-              <span>RouteIQ score</span>
+              <span>RouteIQ score (0–100)</span>
               <strong>{Math.round(customer.score)}</strong>
+            </article>
+            <article>
+              <span>Suggested action</span>
+              <strong>
+                {displayRecommendedAction(customer.recommended_action, customer.priority_class)}
+              </strong>
             </article>
             <article>
               <span>Expected return</span>
@@ -125,7 +139,11 @@ export function CustomerDetailPage({
 
           <MascotTip
             label="Why this score"
-            message={`RouteIQ ranked this customer ${Math.round(customer.score)} based on priority, recency, pipeline, order history, and reorder probability.`}
+            message={
+              customer.top_reasons.length > 0
+                ? customer.top_reasons.join(' ')
+                : `RouteIQ ranked this customer ${Math.round(customer.score)} using visit likelihood from recency, pipeline, order history, and reorder probability (CRM priority ${customer.crm_priority} is not a model input).`
+            }
             mood="thinking"
           />
 
@@ -182,6 +200,17 @@ export function CustomerDetailPage({
               </ul>
             )}
           </section>
+
+          <VisitRecapPanel
+            customerId={customer.id}
+            customerName={customer.name}
+            onPersisted={() => {
+              void onAfterVisitLogged()
+              void loadCustomer()
+              setConfirmation('AI recap saved as a visit. The plan will refresh.')
+            }}
+            salespersonId={salespersonId}
+          />
 
           <form className="visit-form" onSubmit={onSubmit}>
             <h3>Mark visit</h3>

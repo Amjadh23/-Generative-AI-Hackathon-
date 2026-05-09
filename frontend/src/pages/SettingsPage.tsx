@@ -4,10 +4,12 @@ type SettingsPageProps = {
   salespeople: Salesperson[]
   selectedSalespersonId: string
   onSelectSalesperson: (salespersonId: string) => void
+  onOpenManager: () => void
   onReplan: () => void
 }
 
 export function SettingsPage({
+  onOpenManager,
   onReplan,
   onSelectSalesperson,
   salespeople,
@@ -46,6 +48,10 @@ export function SettingsPage({
           })}
         </ul>
       </div>
+
+      <button className="secondary-action" onClick={onOpenManager} type="button">
+        Manager dashboard
+      </button>
 
       <button className="primary-action" onClick={onReplan} type="button">
         Re-run plan

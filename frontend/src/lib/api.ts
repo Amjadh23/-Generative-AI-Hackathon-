@@ -6,9 +6,14 @@ export type DayPlanStop = {
   lat: number
   lng: number
   score: number
+  visit_likelihood_score: number
+  priority_class: string
+  recommended_action: string
+  top_reasons: string[]
   expected_return_rm: number
   distance_from_previous_km: number
   eta_minutes: number
+  visit_duration_minutes: number
   reason: string
   focus: string
 }
@@ -76,14 +81,30 @@ export type CustomerDetail = {
   assigned_salesperson_id: string
   lat: number
   lng: number
-  priority: number
+  /** Synthetic CRM field from seed data — not used by the XGBoost model. */
+  crm_priority: number
   avg_order_value_rm: number
   open_pipeline_rm: number
   last_visit_days: number
   reorder_probability: number
   score: number
+  visit_likelihood_score: number
+  priority_class: string
+  /** Prefer server value; UI falls back from `priority_class` if missing (stale cache / old API). */
+  recommended_action?: string
   expected_return_rm: number
   score_contributions: Record<string, number>
+  top_reasons: string[]
+  xgboost_explanation: {
+    base_value: number
+    top_priority_reasons: Array<{
+      feature: string
+      actual_value: string | number
+      shap_value: number
+      effect: string
+      meaning: string
+    }>
+  } | null
   visits: CustomerVisit[]
   orders: CustomerOrder[]
 }
@@ -97,7 +118,24 @@ export type AssistantResponse = {
   suggestions: string[]
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000'
+export type VisitRecap = {
+  visit_id: string | null
+  persisted: boolean
+  summary: string
+  outcome: VisitOutcome
+  next_action: string
+  due_date: string | null
+  products_mentioned: string[]
+  sentiment: 'positive' | 'neutral' | 'negative'
+  confidence: number
+  raw_transcript: string
+}
+
+/** Trim trailing slash so paths like `/admin/dashboard` never become `//admin/dashboard` (404 on FastAPI). */
+const API_BASE_URL = String(import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000').replace(
+  /\/+$/,
+  '',
+)
 
 async function get<T>(path: string): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`)
@@ -112,6 +150,18 @@ async function post<T>(path: string, body: unknown): Promise<T> {
     body: JSON.stringify(body),
     headers: { 'Content-Type': 'application/json' },
     method: 'POST',
+  })
+  if (!response.ok) {
+    throw new Error(`Request failed: ${response.status} ${path}`)
+  }
+  return response.json() as Promise<T>
+}
+
+async function patch<T>(path: string, body: unknown): Promise<T> {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    body: JSON.stringify(body),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'PATCH',
   })
   if (!response.ok) {
     throw new Error(`Request failed: ${response.status} ${path}`)
@@ -157,6 +207,111 @@ export function askAssistant(input: {
   return post<AssistantResponse>('/assistant/ask', {
     current_customer_id: input.currentCustomerId ?? null,
     question: input.question,
+    salesperson_id: input.salespersonId,
+  })
+}
+
+export function recapVisit(input: {
+  customerId: string
+  salespersonId: string
+  transcript: string
+  persist?: boolean
+}): Promise<VisitRecap> {
+  return post<VisitRecap>('/visits/recap', {
+    customer_id: input.customerId,
+    persist: input.persist ?? true,
+    salesperson_id: input.salespersonId,
+    transcript: input.transcript,
+  })
+}
+
+export type ManagerRepSummary = {
+  salesperson_id: string
+  name: string
+  territory_id: string
+  territory_name: string
+  customer_count: number
+  today_top_expected_return_rm: number
+  ai_recap_visit_count: number
+  /** AI recaps in last 30d with outcome order / follow_up / closed */
+  interested_recaps_30d: number
+  active_follow_ups: number
+}
+
+export type ManagerRecentAiRecap = {
+  visit_id: string
+  customer_id: string
+  customer_name: string
+  segment: string
+  salesperson_id: string
+  salesperson_name: string
+  territory_name: string
+  visited_at: string
+  outcome: string
+  interest_label: string
+  is_interested: boolean
+  summary: string
+  next_action: string
+}
+
+export type ManagerCustomerRanking = {
+  customer_id: string
+  customer_name: string
+  segment: string
+  territory_id: string
+  territory_name: string
+  assigned_salesperson_id: string
+  assigned_salesperson_name: string
+  routeiq_score: number
+  expected_return_rm: number
+  last_visit_days: number
+  visit_signal: number
+  last_visit_outcome: string | null
+  future_potential_baseline: number
+  future_potential_index: number
+}
+
+export type ManagerCustomerPick = {
+  customer_id: string
+  name: string
+  segment: string
+  territory_name: string
+  assigned_salesperson_id: string
+  assigned_salesperson_name: string
+}
+
+export type RecapImpact = {
+  headline: string
+  subhead: string
+  avg_before: number
+  avg_after: number
+  spotlight_customer_name: string | null
+  spotlight_before: number
+  spotlight_after: number
+  spotlight_outcome: string | null
+}
+
+export type ManagerDashboard = {
+  generated_at: string
+  date: string
+  reps: ManagerRepSummary[]
+  rankings: ManagerCustomerRanking[]
+  customers_for_assignment: ManagerCustomerPick[]
+  recent_ai_recaps: ManagerRecentAiRecap[]
+  ranking_note: string
+  recap_monitor_note: string
+  recap_impact: RecapImpact
+}
+
+export function fetchManagerDashboard(): Promise<ManagerDashboard> {
+  return get<ManagerDashboard>('/admin/dashboard')
+}
+
+export function assignCustomerToRep(input: {
+  customerId: string
+  salespersonId: string
+}): Promise<{ customer_id: string; salesperson_id: string; territory_id: string }> {
+  return patch(`/admin/customers/${input.customerId}/assignment`, {
     salesperson_id: input.salespersonId,
   })
 }
