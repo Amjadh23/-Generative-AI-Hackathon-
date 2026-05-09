@@ -30,6 +30,32 @@ const LIVE_BLUE = '#1d4ed8'
 const POSITRON_STYLE = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
 const ROUTE_LAYER = 'routeiq-route'
 const ACCURACY_LAYER = 'routeiq-accuracy'
+const KL_CENTER = { lat: 3.139, lng: 101.6869 }
+
+function sameLngLat(a: [number, number] | undefined, b: [number, number]) {
+  if (!a) return false
+  return Math.abs(a[0] - b[0]) < 0.00001 && Math.abs(a[1] - b[1]) < 0.00001
+}
+
+function routeCoordinatesWithExactStops(
+  geometry: RouteGeometry,
+  waypoints: { lat: number; lng: number }[],
+): [number, number][] {
+  const coordinates = [...geometry.coordinates]
+  if (waypoints.length === 0) return coordinates
+
+  const start: [number, number] = [waypoints[0].lng, waypoints[0].lat]
+  const endWaypoint = waypoints[waypoints.length - 1]
+  const end: [number, number] = [endWaypoint.lng, endWaypoint.lat]
+
+  if (!sameLngLat(coordinates[0], start)) {
+    coordinates.unshift(start)
+  }
+  if (!sameLngLat(coordinates[coordinates.length - 1], end)) {
+    coordinates.push(end)
+  }
+  return coordinates
+}
 
 function metersToCircle(centerLng: number, centerLat: number, radiusMeters: number) {
   const points = 64
@@ -68,6 +94,7 @@ export function MapPage({ dayPlan, onSelectCustomer, territory }: MapPageProps) 
   const liveMarkerRef = useRef<maplibregl.Marker | null>(null)
   const mascotMarkerRef = useRef<maplibregl.Marker | null>(null)
   const lastRoutedFromRef = useRef<{ lat: number; lng: number } | null>(null)
+  const lastRouteKeyRef = useRef<string | null>(null)
   const mascotMarkup = useMemo(
     () => renderToStaticMarkup(<Mascot mood="happy" size={48} />),
     [],
@@ -77,18 +104,30 @@ export function MapPage({ dayPlan, onSelectCustomer, territory }: MapPageProps) 
   const [navigating, setNavigating] = useState(false)
   const [voiceEnabled, setVoiceEnabled] = useState(true)
   const [routeMeta, setRouteMeta] = useState<RouteGeometry | null>(null)
+  const [mapReady, setMapReady] = useState(false)
   const [showAllSteps, setShowAllSteps] = useState(false)
 
   const demoFallback = useMemo(() => {
     if (territory) return { lat: territory.home_lat, lng: territory.home_lng }
-    if (dayPlan?.stops[0]) return { lat: dayPlan.stops[0].lat, lng: dayPlan.stops[0].lng }
-    return null
-  }, [territory, dayPlan])
+    return KL_CENTER
+  }, [territory])
 
-  const { error: geoError, position, useDemoLocation, usingDemo } = useGeolocation({
+  const { error: geoError, position: detectedPosition, useDemoLocation: setDemoLocation, usingDemo } = useGeolocation({
     demoFallback,
     enabled: true,
   })
+
+  const position = useMemo(() => {
+    if (!detectedPosition) return null
+    if (usingDemo) return detectedPosition.source === 'demo' ? detectedPosition : null
+    return detectedPosition.source === 'gps' ? detectedPosition : null
+  }, [detectedPosition, usingDemo])
+
+  const routeStart = useMemo(() => {
+    if (position) return { lat: position.lat, lng: position.lng, source: position.source }
+    if (demoFallback) return { lat: demoFallback.lat, lng: demoFallback.lng, source: 'planned' as const }
+    return null
+  }, [position, demoFallback])
 
   const { currentStep, currentStepIndex, distanceToManeuverMeters, nextStep } = useTurnByTurn({
     active: navigating,
@@ -128,13 +167,35 @@ export function MapPage({ dayPlan, onSelectCustomer, territory }: MapPageProps) 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
 
-    mapRef.current = new maplibregl.Map({
+    const map = new maplibregl.Map({
       center: [101.6869, 3.139],
       container: containerRef.current,
       style: POSITRON_STYLE,
       zoom: 11,
     })
-    mapRef.current.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right')
+    mapRef.current = map
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right')
+
+    const onLoad = () => {
+      map.resize()
+      setMapReady(true)
+    }
+    map.once('load', onLoad)
+
+    const resizeFrame = window.requestAnimationFrame(() => map.resize())
+
+    return () => {
+      window.cancelAnimationFrame(resizeFrame)
+      stopMarkersRef.current.forEach((marker) => marker.remove())
+      stopMarkersRef.current = []
+      liveMarkerRef.current?.remove()
+      liveMarkerRef.current = null
+      mascotMarkerRef.current?.remove()
+      mascotMarkerRef.current = null
+      map.remove()
+      mapRef.current = null
+      setMapReady(false)
+    }
   }, [])
 
   useEffect(() => {
@@ -242,32 +303,48 @@ export function MapPage({ dayPlan, onSelectCustomer, territory }: MapPageProps) 
     } else {
       map.once('load', renderLive)
     }
-  }, [position, followMe, navigating])
+  }, [position, followMe, navigating, mascotMarkup])
 
   useEffect(() => {
     const map = mapRef.current
-    if (!map || !dayPlan || !position) return
+    if (!map || !mapReady) return
+    map.resize()
+  }, [mapReady, dayPlan, routeMeta])
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !mapReady || !dayPlan || !routeStart) return
+
+    const waypoints = [
+      { lat: routeStart.lat, lng: routeStart.lng },
+      ...dayPlan.stops.map((stop) => ({ lat: stop.lat, lng: stop.lng })),
+    ]
+    const routeKey = waypoints
+      .map((point) => `${point.lat.toFixed(5)},${point.lng.toFixed(5)}`)
+      .join('|')
 
     const movedFar =
       !lastRoutedFromRef.current ||
-      haversineKm(lastRoutedFromRef.current, { lat: position.lat, lng: position.lng }) > 0.1
+      haversineKm(lastRoutedFromRef.current, { lat: routeStart.lat, lng: routeStart.lng }) > 0.1
 
-    if (!movedFar && routeMeta) return
+    if (!movedFar && routeMeta && lastRouteKeyRef.current === routeKey) return
 
     let cancelled = false
-    const waypoints = [
-      { lat: position.lat, lng: position.lng },
-      ...dayPlan.stops.map((stop) => ({ lat: stop.lat, lng: stop.lng })),
-    ]
 
     fetchRouteGeometry(waypoints).then((geometry) => {
       if (cancelled) return
-      setRouteMeta(geometry)
-      lastRoutedFromRef.current = { lat: position.lat, lng: position.lng }
+      const visibleCoordinates = routeCoordinatesWithExactStops(geometry, waypoints)
+      const visibleGeometry: RouteGeometry = {
+        ...geometry,
+        coordinates: visibleCoordinates,
+      }
+      setRouteMeta(visibleGeometry)
+      lastRoutedFromRef.current = { lat: routeStart.lat, lng: routeStart.lng }
+      lastRouteKeyRef.current = routeKey
 
       const renderRoute = () => {
         const data: GeoJSON.Feature<GeoJSON.LineString> = {
-          geometry: { coordinates: geometry.coordinates, type: 'LineString' },
+          geometry: { coordinates: visibleCoordinates, type: 'LineString' },
           properties: {},
           type: 'Feature',
         }
@@ -286,26 +363,25 @@ export function MapPage({ dayPlan, onSelectCustomer, territory }: MapPageProps) 
           })
         }
 
-        if (!followMe && !navigating) {
-          const bounds = geometry.coordinates.reduce(
+        if ((!followMe || routeStart.source === 'planned') && !navigating) {
+          const bounds = visibleCoordinates.reduce(
             (acc, coordinate) => acc.extend(coordinate as LngLatLike),
             new maplibregl.LngLatBounds(
-              geometry.coordinates[0] as LngLatLike,
-              geometry.coordinates[0] as LngLatLike,
+              visibleCoordinates[0] as LngLatLike,
+              visibleCoordinates[0] as LngLatLike,
             ),
           )
           map.fitBounds(bounds, { duration: 600, padding: 60 })
         }
       }
 
-      if (map.isStyleLoaded()) renderRoute()
-      else map.once('load', renderRoute)
+      renderRoute()
     })
 
     return () => {
       cancelled = true
     }
-  }, [position, dayPlan, followMe, navigating, routeMeta])
+  }, [routeStart, dayPlan, followMe, navigating, routeMeta, mapReady])
 
   const onStartNavigation = () => {
     setNavigating(true)
@@ -384,7 +460,7 @@ export function MapPage({ dayPlan, onSelectCustomer, territory }: MapPageProps) 
         <button
           aria-pressed={usingDemo}
           className={usingDemo ? 'chip-button active' : 'chip-button'}
-          onClick={() => useDemoLocation(!usingDemo)}
+          onClick={() => setDemoLocation(!usingDemo)}
           type="button"
         >
           {usingDemo ? 'Demo location on' : 'Use demo location'}
@@ -447,7 +523,7 @@ export function MapPage({ dayPlan, onSelectCustomer, territory }: MapPageProps) 
           ? position.source === 'demo'
             ? 'Showing simulated location for demo purposes.'
             : `Live GPS \u00b7 accuracy \u00b1${Math.round(position.accuracyMeters)} m`
-          : 'Waiting for location permission...'}
+          : 'Showing planned route from territory home while waiting for location permission.'}
       </p>
 
       {dayPlan ? (
