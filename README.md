@@ -45,6 +45,24 @@ Frontend: `http://localhost:5173`
 docker compose up --build
 ```
 
+### MCP server (optional)
+
+RouteIQ also includes an optional MCP wrapper under `mcp_server/`. It exposes
+the same backend capabilities as agent-callable tools, without changing the
+React app or FastAPI API.
+
+```powershell
+cd backend
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+pip install -r ..\mcp_server\requirements.txt
+cd ..
+python mcp_server\server.py
+```
+
+Available MCP tools include day planning, top visits, customer profile lookup,
+score explanation, manager dashboard, and visit recap preview.
+
 ## Demo Script
 
 1. Open the PWA on a phone-sized browser viewport.
