@@ -34,6 +34,13 @@ paths:
           required: false
           schema:
             type: number
+        - name: max_stops
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
       responses:
         "200":
           description: Optimized day plan

@@ -57,6 +57,7 @@ class AssistantRequest(BaseModel):
     salesperson_id: str
     question: str = Field(min_length=1, max_length=500)
     current_customer_id: str | None = None
+    max_stops: int | None = Field(default=None, ge=1, le=10)
 
 
 class AssistantResponse(BaseModel):

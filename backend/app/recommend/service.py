@@ -22,6 +22,7 @@ def build_day_plan(
     plan_date: date,
     start_lat: float | None = None,
     start_lng: float | None = None,
+    max_stops: int | None = None,
     database_path: Path = DEFAULT_OUTPUT,
 ) -> DayPlan:
     if not database_path.exists():
@@ -50,9 +51,13 @@ def build_day_plan(
 
     home_lat = start_lat if start_lat is not None else salesperson["home_lat"]
     home_lng = start_lng if start_lng is not None else salesperson["home_lng"]
-    max_stops = salesperson["max_daily_stops"]
+    max_stops = max_stops if max_stops is not None else salesperson["max_daily_stops"]
 
-    scored_customers = top_customers_for_salesperson(salesperson_id, limit=18, database_path=database_path)
+    scored_customers = top_customers_for_salesperson(
+        salesperson_id,
+        limit=max(18, max_stops),
+        database_path=database_path,
+    )
     candidates = [
         RouteCandidate(
             customer_id=scored.customer_id,

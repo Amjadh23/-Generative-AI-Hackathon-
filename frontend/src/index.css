@@ -257,6 +257,167 @@ h3 {
   font-weight: 900;
 }
 
+.plan-tuner {
+  display: grid;
+  gap: 14px;
+  margin: 14px 0 18px;
+  padding: 16px;
+  border-radius: 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 14px 30px -24px rgba(15, 23, 42, 0.28);
+}
+
+.plan-tuner-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.plan-tuner-kicker,
+.stop-input-label {
+  display: block;
+  color: var(--hilti-red);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.plan-tuner-header h2 {
+  margin-top: 2px;
+}
+
+.plan-tuner-status {
+  min-width: 104px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--hilti-red-soft);
+  color: var(--hilti-red);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.plan-tuner-status.active {
+  background: var(--hilti-red);
+  color: #ffffff;
+}
+
+.stop-planner {
+  display: grid;
+  gap: 12px;
+}
+
+.stop-input-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.stop-input-label {
+  color: var(--ink-subtle);
+}
+
+.stop-stepper {
+  display: grid;
+  grid-template-columns: 42px 72px 42px;
+  min-height: 46px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-muted);
+}
+
+.stop-stepper button {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  border: 0;
+  background: var(--surface);
+  color: var(--hilti-red);
+  cursor: pointer;
+}
+
+.stop-stepper button:disabled {
+  color: var(--ink-subtle);
+  cursor: not-allowed;
+}
+
+.stop-stepper input {
+  width: 72px;
+  border: 0;
+  border-inline: 1px solid var(--border);
+  background: #ffffff;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 22px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.stop-stepper button:focus-visible,
+.stop-stepper input:focus-visible,
+.stop-range:focus-visible,
+.stop-presets button:focus-visible {
+  outline: 2px solid var(--hilti-red);
+  outline-offset: 2px;
+}
+
+.stop-range {
+  width: 100%;
+  accent-color: var(--hilti-red);
+  cursor: pointer;
+}
+
+.stop-presets {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.stop-presets button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 42px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-muted);
+  color: var(--ink-muted);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.stop-presets button[aria-pressed="true"] {
+  border-color: var(--hilti-red);
+  background: var(--hilti-red-soft);
+  color: var(--hilti-red);
+}
+
+.stop-presets span {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.stop-presets strong {
+  font-size: 18px;
+  font-weight: 900;
+}
+
 .loading-state {
   display: grid;
   justify-items: center;

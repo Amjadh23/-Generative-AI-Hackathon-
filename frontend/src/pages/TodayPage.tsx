@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type KeyboardEvent } from 'react'
 
-import { NavigateIcon } from '../components/Icon'
+import { MinusIcon, NavigateIcon, PlusIcon } from '../components/Icon'
 import { ImpactCard } from '../components/ImpactCard'
 import { Mascot } from '../components/Mascot'
 import { MascotTip } from '../components/MascotTip'
@@ -14,31 +14,93 @@ type TodayPageProps = {
   error: string | null
   onSelectCustomer: (customerId: string) => void
   onOpenMap: () => void
+  onStopCountChange: (stopCount: number) => void
+  requestedStopCount: number
+  defaultStopCount: number
+  minStopCount: number
+  maxStopCount: number
   salespersonName: string
   territoryName: string
 }
 
 export function TodayPage({
   dayPlan,
+  defaultStopCount,
   error,
   loading,
+  maxStopCount,
+  minStopCount,
   onOpenMap,
   onSelectCustomer,
+  onStopCountChange,
+  requestedStopCount,
   salespersonName,
   territoryName,
 }: TodayPageProps) {
   const nextStop = dayPlan?.stops[0]
   const [waving, setWaving] = useState(true)
   const [visitListMode, setVisitListMode] = useState<'top5' | 'all'>('top5')
+  const [draftStopCountState, setDraftStopCountState] = useState({
+    stopCount: requestedStopCount,
+    value: String(requestedStopCount),
+  })
+  const draftStopCount =
+    draftStopCountState.stopCount === requestedStopCount
+      ? draftStopCountState.value
+      : String(requestedStopCount)
+  const setDraftStopCount = (value: string) =>
+    setDraftStopCountState({ stopCount: requestedStopCount, value })
   const visibleStops = useMemo(() => {
     if (!dayPlan) return []
     return visitListMode === 'top5' ? dayPlan.stops.slice(0, 5) : dayPlan.stops
   }, [dayPlan, visitListMode])
+  const plannedStopCount = dayPlan?.stops.length ?? requestedStopCount
+  const stopPlanLabel =
+    requestedStopCount < defaultStopCount
+      ? 'Compact route'
+      : requestedStopCount > defaultStopCount
+        ? 'Growth push'
+        : 'Standard route'
+  const presetOptions = useMemo(() => {
+    const options = [
+      { label: 'Quick', value: Math.max(minStopCount, defaultStopCount - 3) },
+      { label: 'Standard', value: defaultStopCount },
+      { label: 'Push', value: Math.min(maxStopCount, defaultStopCount + 2) },
+    ]
+
+    return options.filter(
+      (option, index) => options.findIndex((candidate) => candidate.value === option.value) === index,
+    )
+  }, [defaultStopCount, maxStopCount, minStopCount])
 
   useEffect(() => {
     const timer = window.setTimeout(() => setWaving(false), 1700)
     return () => window.clearTimeout(timer)
   }, [])
+
+  const normalizeStopCount = (value: number) =>
+    Math.min(maxStopCount, Math.max(minStopCount, Math.round(value)))
+
+  const applyStopCount = (value: number) => {
+    const nextStopCount = normalizeStopCount(value)
+    setDraftStopCount(String(nextStopCount))
+    onStopCountChange(nextStopCount)
+  }
+
+  const commitDraftStopCount = () => {
+    const parsed = Number.parseInt(draftStopCount, 10)
+    if (Number.isNaN(parsed)) {
+      setDraftStopCount(String(requestedStopCount))
+      return
+    }
+    applyStopCount(parsed)
+  }
+
+  const onStopInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.currentTarget.blur()
+    }
+  }
 
   return (
     <>
@@ -56,8 +118,85 @@ export function TodayPage({
         <div className="hero-mascot">
           <Mascot mood="happy" size={92} waving={waving} />
           <span className="hero-mascot-count">
-            <strong>{dayPlan?.stops.length ?? 0}</strong> stops
+            <strong>{plannedStopCount}</strong> stops
           </span>
+        </div>
+      </section>
+
+      <section aria-label="Daily stop planner" className="plan-tuner">
+        <div className="plan-tuner-header">
+          <div>
+            <span className="plan-tuner-kicker">Route capacity</span>
+            <h2>{stopPlanLabel}</h2>
+          </div>
+          <span className={loading ? 'plan-tuner-status active' : 'plan-tuner-status'}>
+            {loading ? `Optimizing ${requestedStopCount}` : `${plannedStopCount} planned`}
+          </span>
+        </div>
+
+        <div className="stop-planner">
+          <div className="stop-input-row">
+            <label className="stop-input-label" htmlFor="daily-stop-count">
+              Stops today
+            </label>
+            <div className="stop-stepper">
+              <button
+                aria-label="Reduce stops"
+                disabled={requestedStopCount <= minStopCount}
+                onClick={() => applyStopCount(requestedStopCount - 1)}
+                title="Reduce stops"
+                type="button"
+              >
+                <MinusIcon size={18} />
+              </button>
+              <input
+                aria-label="Stops today"
+                id="daily-stop-count"
+                inputMode="numeric"
+                max={maxStopCount}
+                min={minStopCount}
+                onBlur={commitDraftStopCount}
+                onChange={(event) => setDraftStopCount(event.target.value)}
+                onKeyDown={onStopInputKeyDown}
+                type="number"
+                value={draftStopCount}
+              />
+              <button
+                aria-label="Add stop"
+                disabled={requestedStopCount >= maxStopCount}
+                onClick={() => applyStopCount(requestedStopCount + 1)}
+                title="Add stop"
+                type="button"
+              >
+                <PlusIcon size={18} />
+              </button>
+            </div>
+          </div>
+
+          <input
+            aria-label="Daily stop count"
+            className="stop-range"
+            max={maxStopCount}
+            min={minStopCount}
+            onChange={(event) => applyStopCount(Number(event.target.value))}
+            step={1}
+            type="range"
+            value={requestedStopCount}
+          />
+
+          <div aria-label="Stop count presets" className="stop-presets">
+            {presetOptions.map((preset) => (
+              <button
+                aria-pressed={requestedStopCount === preset.value}
+                key={preset.label}
+                onClick={() => applyStopCount(preset.value)}
+                type="button"
+              >
+                <span>{preset.label}</span>
+                <strong>{preset.value}</strong>
+              </button>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -72,7 +211,7 @@ export function TodayPage({
       {dayPlan ? (
         <>
           {dayPlan.optimization_summary ? (
-            <ImpactCard summary={dayPlan.optimization_summary} />
+            <ImpactCard stopCount={plannedStopCount} summary={dayPlan.optimization_summary} />
           ) : null}
 
           <section aria-label="Plan summary" className="summary-grid">

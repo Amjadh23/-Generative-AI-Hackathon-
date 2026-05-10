@@ -183,8 +183,16 @@ async function patch<T>(path: string, body: unknown): Promise<T> {
   return response.json() as Promise<T>
 }
 
-export function fetchDayPlan(salespersonId: string): Promise<DayPlan> {
-  return get<DayPlan>(`/salespeople/${salespersonId}/day-plan`)
+export function fetchDayPlan(
+  salespersonId: string,
+  options: { maxStops?: number } = {},
+): Promise<DayPlan> {
+  const params = new URLSearchParams()
+  if (options.maxStops !== undefined) {
+    params.set('max_stops', String(options.maxStops))
+  }
+  const query = params.toString()
+  return get<DayPlan>(`/salespeople/${salespersonId}/day-plan${query ? `?${query}` : ''}`)
 }
 
 export function fetchSalespeople(): Promise<Salesperson[]> {
@@ -217,9 +225,11 @@ export function askAssistant(input: {
   salespersonId: string
   question: string
   currentCustomerId?: string | null
+  maxStops?: number
 }): Promise<AssistantResponse> {
   return post<AssistantResponse>('/assistant/ask', {
     current_customer_id: input.currentCustomerId ?? null,
+    max_stops: input.maxStops ?? null,
     question: input.question,
     salesperson_id: input.salespersonId,
   })

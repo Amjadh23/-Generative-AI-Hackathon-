@@ -190,11 +190,13 @@ def answer_question(
     salesperson_id: str,
     question: str,
     current_customer_id: str | None = None,
+    max_stops: int | None = None,
     database_path: Path = DEFAULT_OUTPUT,
 ) -> AssistantResponse:
     plan = build_day_plan(
         salesperson_id=salesperson_id,
         plan_date=date.today(),
+        max_stops=max_stops,
         database_path=database_path,
     )
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ComponentType } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
 
 import { AppHeader } from './components/AppHeader'
 import { CustomerIcon, MapIcon, SettingsIcon, TodayIcon } from './components/Icon'
@@ -33,6 +33,46 @@ const NAV_ITEMS: NavItem[] = [
   { Icon: SettingsIcon, id: 'settings', label: 'Settings' },
 ]
 
+const MIN_STOP_GOAL = 1
+const MAX_STOP_GOAL = 10
+const DEFAULT_STOP_GOAL = 8
+const STOP_GOAL_STORAGE_KEY = 'routeiq.stopGoalOverrides'
+
+type StopGoalOverrides = Record<string, number>
+
+function clampStopGoal(value: number) {
+  if (!Number.isFinite(value)) return DEFAULT_STOP_GOAL
+  return Math.min(MAX_STOP_GOAL, Math.max(MIN_STOP_GOAL, Math.round(value)))
+}
+
+function readStopGoalOverrides(): StopGoalOverrides {
+  if (typeof window === 'undefined') return {}
+  try {
+    const raw = window.localStorage.getItem(STOP_GOAL_STORAGE_KEY)
+    if (!raw) return {}
+    const parsed: unknown = JSON.parse(raw)
+    if (!parsed || typeof parsed !== 'object') return {}
+
+    return Object.entries(parsed).reduce<StopGoalOverrides>((overrides, [id, value]) => {
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        overrides[id] = clampStopGoal(value)
+      }
+      return overrides
+    }, {})
+  } catch {
+    return {}
+  }
+}
+
+function writeStopGoalOverrides(overrides: StopGoalOverrides) {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(STOP_GOAL_STORAGE_KEY, JSON.stringify(overrides))
+  } catch {
+    // In private or locked-down browsers the live plan should still update.
+  }
+}
+
 function App() {
   const [salespeople, setSalespeople] = useState<Salesperson[]>([])
   const [salespersonId, setSalespersonId] = useState<string>(DEFAULT_SALESPERSON_ID)
@@ -42,6 +82,10 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [view, setView] = useState<View>('today')
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null)
+  const [stopGoalOverrides, setStopGoalOverrides] = useState<StopGoalOverrides>(
+    readStopGoalOverrides,
+  )
+  const planRequestRef = useRef(0)
 
   useEffect(() => {
     fetchSalespeople()
@@ -57,28 +101,44 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const loadPlan = useCallback(async (id: string) => {
+  const loadPlan = useCallback(async (id: string, stopCount?: number) => {
+    const requestId = planRequestRef.current + 1
+    planRequestRef.current = requestId
     setLoading(true)
     setError(null)
     try {
-      const [plan, territoryData] = await Promise.all([fetchDayPlan(id), fetchTerritory(id)])
+      const [plan, territoryData] = await Promise.all([
+        fetchDayPlan(id, { maxStops: stopCount === undefined ? undefined : clampStopGoal(stopCount) }),
+        fetchTerritory(id),
+      ])
+      if (requestId !== planRequestRef.current) return
       setDayPlan(plan)
       setTerritory(territoryData)
     } catch (caught: unknown) {
-      setError(caught instanceof Error ? caught.message : 'Unable to load day plan')
+      if (requestId === planRequestRef.current) {
+        setError(caught instanceof Error ? caught.message : 'Unable to load day plan')
+      }
     } finally {
-      setLoading(false)
+      if (requestId === planRequestRef.current) {
+        setLoading(false)
+      }
     }
   }, [])
-
-  useEffect(() => {
-    void loadPlan(salespersonId)
-  }, [salespersonId, loadPlan])
 
   const activeSalesperson = useMemo(
     () => salespeople.find((salesperson) => salesperson.id === salespersonId) ?? null,
     [salespeople, salespersonId],
   )
+
+  const requestedStopCount =
+    stopGoalOverrides[salespersonId] ?? activeSalesperson?.max_daily_stops ?? DEFAULT_STOP_GOAL
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void loadPlan(salespersonId, requestedStopCount)
+    }, 220)
+    return () => window.clearTimeout(timer)
+  }, [salespersonId, requestedStopCount, loadPlan])
 
   const onSelectCustomer = (customerId: string) => {
     setSelectedCustomerId(customerId)
@@ -89,6 +149,16 @@ function App() {
     setSalespersonId(id)
     setSelectedCustomerId(null)
     setView('today')
+  }
+
+  const onStopCountChange = (value: number) => {
+    const nextStopCount = clampStopGoal(value)
+    setStopGoalOverrides((current) => {
+      if (current[salespersonId] === nextStopCount) return current
+      const updated = { ...current, [salespersonId]: nextStopCount }
+      writeStopGoalOverrides(updated)
+      return updated
+    })
   }
 
   return (
@@ -105,10 +175,15 @@ function App() {
           {view === 'today' ? (
             <TodayPage
               dayPlan={dayPlan}
+              defaultStopCount={activeSalesperson?.max_daily_stops ?? DEFAULT_STOP_GOAL}
               error={error}
               loading={loading}
+              maxStopCount={MAX_STOP_GOAL}
+              minStopCount={MIN_STOP_GOAL}
               onOpenMap={() => setView('map')}
               onSelectCustomer={onSelectCustomer}
+              onStopCountChange={onStopCountChange}
+              requestedStopCount={requestedStopCount}
               salespersonName={activeSalesperson?.name ?? 'Salesperson'}
               territoryName={activeSalesperson?.territory_name ?? 'Territory'}
             />
@@ -122,7 +197,7 @@ function App() {
             selectedCustomerId ? (
               <CustomerDetailPage
                 customerId={selectedCustomerId}
-                onAfterVisitLogged={() => loadPlan(salespersonId)}
+                onAfterVisitLogged={() => loadPlan(salespersonId, requestedStopCount)}
                 onBack={() => setView('today')}
                 salespersonId={salespersonId}
               />
@@ -136,7 +211,7 @@ function App() {
           {view === 'settings' ? (
             <SettingsPage
               onOpenManager={() => setView('manager')}
-              onReplan={() => loadPlan(salespersonId)}
+              onReplan={() => loadPlan(salespersonId, requestedStopCount)}
               onSelectSalesperson={onSelectSalesperson}
               salespeople={salespeople}
               selectedSalespersonId={salespersonId}

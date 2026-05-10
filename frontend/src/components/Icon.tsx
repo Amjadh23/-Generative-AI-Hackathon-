@@ -84,6 +84,22 @@ export function NavigateIcon(props: IconProps) {
   )
 }
 
+export function MinusIcon(props: IconProps) {
+  return (
+    <BaseIcon {...props}>
+      <path d="M5 12h14" />
+    </BaseIcon>
+  )
+}
+
+export function PlusIcon(props: IconProps) {
+  return (
+    <BaseIcon {...props}>
+      <path d="M12 5v14M5 12h14" />
+    </BaseIcon>
+  )
+}
+
 export function BackIcon(props: IconProps) {
   return (
     <BaseIcon {...props}>

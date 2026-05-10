@@ -48,6 +48,7 @@ def health() -> dict[str, str]:
 def get_day_plan(
     salesperson_id: str,
     date_: date | None = Query(default=None, alias="date"),
+    max_stops: int | None = Query(default=None, ge=1, le=10),
     start_lat: float | None = None,
     start_lng: float | None = None,
 ) -> DayPlan:
@@ -56,6 +57,7 @@ def get_day_plan(
         plan_date=date_ or date.today(),
         start_lat=start_lat,
         start_lng=start_lng,
+        max_stops=max_stops,
     )
 
 
@@ -214,6 +216,7 @@ def assistant_ask(payload: AssistantRequest) -> AssistantResponse:
             salesperson_id=payload.salesperson_id,
             question=payload.question,
             current_customer_id=payload.current_customer_id,
+            max_stops=payload.max_stops,
         )
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc

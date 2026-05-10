@@ -530,6 +530,7 @@ export function MapPage({ dayPlan, onSelectCustomer, territory }: MapPageProps) 
         <MascotChat
           currentCustomerId={dayPlan.stops[0]?.customer_id ?? null}
           salespersonId={dayPlan.salesperson_id}
+          stopCount={dayPlan.stops.length}
           voiceEnabled={voiceEnabled}
         />
       ) : null}

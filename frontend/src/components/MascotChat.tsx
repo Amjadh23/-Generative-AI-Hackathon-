@@ -17,6 +17,7 @@ type MascotChatProps = {
   salespersonId: string
   currentCustomerId: string | null
   voiceEnabled: boolean
+  stopCount?: number
 }
 
 const INITIAL_SUGGESTIONS = [
@@ -32,7 +33,7 @@ function createMessageId() {
   return `msg-${Date.now()}-${messageCounter}`
 }
 
-export function MascotChat({ currentCustomerId, salespersonId, voiceEnabled }: MascotChatProps) {
+export function MascotChat({ currentCustomerId, salespersonId, stopCount, voiceEnabled }: MascotChatProps) {
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
     {
@@ -44,20 +45,25 @@ export function MascotChat({ currentCustomerId, salespersonId, voiceEnabled }: M
   ])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
-  const [readbackEnabled, setReadbackEnabled] = useState(voiceEnabled)
+  const [readbackSetting, setReadbackSetting] = useState({
+    source: voiceEnabled,
+    value: voiceEnabled,
+  })
+  const readbackEnabled =
+    readbackSetting.source === voiceEnabled ? readbackSetting.value : voiceEnabled
   const [error, setError] = useState<string | null>(null)
   const listEndRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
-
-  useEffect(() => {
-    setReadbackEnabled(voiceEnabled)
-  }, [voiceEnabled])
 
   useEffect(() => {
     if (open) {
       listEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }
   }, [open, messages])
+
+  const toggleReadbackEnabled = () => {
+    setReadbackSetting({ source: voiceEnabled, value: !readbackEnabled })
+  }
 
   const handleResult = useCallback((transcript: string) => {
     setInput(transcript)
@@ -100,6 +106,7 @@ export function MascotChat({ currentCustomerId, salespersonId, voiceEnabled }: M
       try {
         const response: AssistantResponse = await askAssistant({
           currentCustomerId,
+          maxStops: stopCount,
           question,
           salespersonId,
         })
@@ -129,7 +136,7 @@ export function MascotChat({ currentCustomerId, salespersonId, voiceEnabled }: M
         setSending(false)
       }
     },
-    [currentCustomerId, readbackEnabled, salespersonId, sending, stopListening],
+    [currentCustomerId, readbackEnabled, salespersonId, sending, stopCount, stopListening],
   )
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -194,7 +201,7 @@ export function MascotChat({ currentCustomerId, salespersonId, voiceEnabled }: M
                 <button
                   aria-pressed={readbackEnabled}
                   className={readbackEnabled ? 'icon-toggle active' : 'icon-toggle'}
-                  onClick={() => setReadbackEnabled((current) => !current)}
+                  onClick={toggleReadbackEnabled}
                   title={readbackEnabled ? 'Voice replies on' : 'Voice replies off'}
                   type="button"
                 >

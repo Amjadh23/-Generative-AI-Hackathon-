@@ -3,9 +3,10 @@ import { currencyFormatter } from '../lib/format'
 
 type ImpactCardProps = {
   summary: OptimizationSummary
+  stopCount: number
 }
 
-export function ImpactCard({ summary }: ImpactCardProps) {
+export function ImpactCard({ stopCount, summary }: ImpactCardProps) {
   const valuePrefix = summary.value_gain_rm >= 0 ? '+' : '-'
   const distancePrefix = summary.distance_saved_km >= 0 ? '-' : '+'
 
@@ -19,7 +20,7 @@ export function ImpactCard({ summary }: ImpactCardProps) {
         <span className="impact-meta">{summary.routes_evaluated.toLocaleString('en-MY')} routes checked</span>
       </div>
       <p className="impact-summary">
-        Compared with visiting 8 nearby territory customers in nearest-first order.
+        Compared with visiting {stopCount} nearby territory customers in nearest-first order.
       </p>
       <div className="impact-grid">
         <article className="impact-tile primary">
