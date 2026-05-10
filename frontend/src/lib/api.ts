@@ -95,6 +95,11 @@ export type CustomerDetail = {
   expected_return_rm: number
   score_contributions: Record<string, number>
   top_reasons: string[]
+  sentiment_initial_confidence_score: number
+  sentiment_confidence_score: number
+  sentiment_label: string
+  sentiment_source: string
+  sentiment_updated_at: string | null
   xgboost_explanation: {
     base_value: number
     top_priority_reasons: Array<{
@@ -110,6 +115,13 @@ export type CustomerDetail = {
 }
 
 export type VisitOutcome = 'order' | 'follow_up' | 'no_interest' | 'closed'
+
+export type VisitSentiment =
+  | 'very_negative'
+  | 'negative'
+  | 'neutral'
+  | 'positive'
+  | 'very_positive'
 
 export type AssistantResponse = {
   answer: string
@@ -128,6 +140,8 @@ export type VisitRecap = {
   products_mentioned: string[]
   sentiment: 'positive' | 'neutral' | 'negative'
   confidence: number
+  previous_sentiment_confidence_score: number | null
+  sentiment_confidence_score: number
   raw_transcript: string
 }
 
@@ -225,6 +239,28 @@ export function recapVisit(input: {
   })
 }
 
+export type VisitSentimentResult = {
+  visit_id: string
+  status: string
+  sentiment: VisitSentiment
+  sentiment_label: string
+  outcome: VisitOutcome
+  previous_sentiment_confidence_score: number
+  sentiment_confidence_score: number
+}
+
+export function logVisitSentiment(input: {
+  customerId: string
+  salespersonId: string
+  sentiment: VisitSentiment
+}): Promise<VisitSentimentResult> {
+  return post<VisitSentimentResult>('/visits/sentiment', {
+    customer_id: input.customerId,
+    salesperson_id: input.salespersonId,
+    sentiment: input.sentiment,
+  })
+}
+
 export type ManagerRepSummary = {
   salesperson_id: string
   name: string
@@ -269,6 +305,11 @@ export type ManagerCustomerRanking = {
   last_visit_outcome: string | null
   future_potential_baseline: number
   future_potential_index: number
+  sentiment_initial_confidence_score: number
+  sentiment_confidence_score: number
+  sentiment_label: string
+  sentiment_source: string
+  sentiment_updated_at: string | null
 }
 
 export type ManagerCustomerPick = {
@@ -289,6 +330,11 @@ export type RecapImpact = {
   spotlight_before: number
   spotlight_after: number
   spotlight_outcome: string | null
+  spotlight_confidence_before: number | null
+  spotlight_confidence_after: number | null
+  spotlight_sentiment: string | null
+  spotlight_sentiment_source: string | null
+  spotlight_sentiment_updated_at: string | null
 }
 
 export type ManagerDashboard = {

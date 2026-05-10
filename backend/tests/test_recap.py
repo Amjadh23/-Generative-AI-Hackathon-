@@ -6,7 +6,7 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
-from app.data.generate import DEFAULT_OUTPUT, seed_database
+from app.data.generate import DEFAULT_OUTPUT, ensure_runtime_schema, seed_database
 from app.llm import recap as recap_module
 from app.main import app
 
@@ -34,7 +34,13 @@ def fake_recap_llm(monkeypatch: pytest.MonkeyPatch):
         sentiment = "neutral"
         if "great" in transcript or "happy" in transcript or "excited" in transcript:
             sentiment = "positive"
-        elif "frustrated" in transcript or "angry" in transcript or "upset" in transcript:
+        elif (
+            "frustrated" in transcript
+            or "angry" in transcript
+            or "upset" in transcript
+            or "not interested" in transcript
+            or "no interest" in transcript
+        ):
             sentiment = "negative"
 
         products: list[str] = []
@@ -74,6 +80,8 @@ def test_recap_returns_structured_fields(fake_recap_llm: None) -> None:
     assert "firestop" in data["products_mentioned"]
     assert data["due_date"] is not None
     assert 0.0 <= data["confidence"] <= 1.0
+    assert data["sentiment_confidence_score"] > 0.5
+    assert data["previous_sentiment_confidence_score"] is None
     assert data["persisted"] is False
     assert data["visit_id"] is None
 
@@ -102,10 +110,62 @@ def test_recap_persists_visit_when_requested(fake_recap_llm: None) -> None:
         last_visit = connection.execute(
             "SELECT last_visit_days FROM customers WHERE id = ?", ("cust-0002",)
         ).fetchone()
+        sentiment = connection.execute(
+            """
+            SELECT current_confidence_score, sentiment, source
+            FROM customer_sentiment
+            WHERE customer_id = ?
+            """,
+            ("cust-0002",),
+        ).fetchone()
     assert row is not None
     assert row[0] == "no_interest"
     assert row[1] == "cust-0002"
     assert last_visit[0] == 0
+    assert sentiment is not None
+    assert sentiment[0] < 0.5
+    assert sentiment[1] == "negative"
+    assert sentiment[2] == "ai_recap"
+
+
+def test_quick_sentiment_logs_visit_and_updates_confidence() -> None:
+    with sqlite3.connect(DEFAULT_OUTPUT) as connection:
+        ensure_runtime_schema(connection)
+        connection.execute("DELETE FROM customer_sentiment WHERE customer_id = ?", ("cust-0003",))
+        connection.commit()
+
+    response = client.post(
+        "/visits/sentiment",
+        json={
+            "customer_id": "cust-0003",
+            "salesperson_id": "sp-kl-central",
+            "sentiment": "very_positive",
+        },
+    )
+    assert response.status_code == 201, response.text
+    data = response.json()
+    assert data["sentiment"] == "very_positive"
+    assert data["outcome"] == "order"
+    assert data["previous_sentiment_confidence_score"] == 0.5
+    assert data["sentiment_confidence_score"] == 0.9
+
+    with sqlite3.connect(DEFAULT_OUTPUT) as connection:
+        row = connection.execute(
+            "SELECT outcome, notes FROM visit_history WHERE id = ?",
+            (data["visit_id"],),
+        ).fetchone()
+        sentiment = connection.execute(
+            """
+            SELECT current_confidence_score, sentiment, source
+            FROM customer_sentiment
+            WHERE customer_id = ?
+            """,
+            ("cust-0003",),
+        ).fetchone()
+    assert row is not None
+    assert row[0] == "order"
+    assert "Quick visit sentiment" in row[1]
+    assert sentiment == (0.9, "very_positive", "quick_button")
 
 
 def test_recap_404_for_unknown_customer(fake_recap_llm: None) -> None:

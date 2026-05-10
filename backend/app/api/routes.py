@@ -17,12 +17,15 @@ from app.core.schemas import (
     VisitCreated,
     VisitRecapRequest,
     VisitRecapResponse,
+    VisitSentimentRequest,
+    VisitSentimentResponse,
 )
-from app.data.generate import DEFAULT_OUTPUT, seed_database
+from app.data.generate import DEFAULT_OUTPUT, ensure_runtime_schema, seed_database
 from app.llm.client import LLMError
 from app.llm.recap import build_recap
 from app.ml.score import score_customer
 from app.recommend.service import build_day_plan
+from app.sentiment.service import log_manual_sentiment_visit
 
 router = APIRouter()
 
@@ -30,6 +33,8 @@ router = APIRouter()
 def _ensure_database(database_path: Path = DEFAULT_OUTPUT) -> Path:
     if not database_path.exists():
         seed_database(database_path)
+    with sqlite3.connect(database_path) as connection:
+        ensure_runtime_schema(connection)
     return database_path
 
 
@@ -88,6 +93,16 @@ def get_customer(customer_id: str) -> dict[str, object]:
             (customer_id,),
         ).fetchall()
 
+        sentiment = connection.execute(
+            """
+            SELECT initial_confidence_score, current_confidence_score,
+                   sentiment, source, updated_at
+            FROM customer_sentiment
+            WHERE customer_id = ?
+            """,
+            (customer_id,),
+        ).fetchone()
+
     score = score_customer(customer_id, database_path)
     return {
         "id": customer["id"],
@@ -110,6 +125,15 @@ def get_customer(customer_id: str) -> dict[str, object]:
         "score_contributions": score.contributions,
         "top_reasons": score.top_reasons,
         "xgboost_explanation": score.xgboost_explanation_payload,
+        "sentiment_initial_confidence_score": (
+            sentiment["initial_confidence_score"] if sentiment else 0.5
+        ),
+        "sentiment_confidence_score": (
+            sentiment["current_confidence_score"] if sentiment else 0.5
+        ),
+        "sentiment_label": sentiment["sentiment"] if sentiment else "neutral",
+        "sentiment_source": sentiment["source"] if sentiment else "initial",
+        "sentiment_updated_at": sentiment["updated_at"] if sentiment else None,
         "visits": [dict(visit) for visit in visits],
         "orders": [dict(order) for order in orders],
     }
@@ -214,6 +238,21 @@ def visits_recap(payload: VisitRecapRequest) -> VisitRecapResponse:
         )
     except LLMError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+
+@router.post("/visits/sentiment", status_code=201, response_model=VisitSentimentResponse)
+def visits_sentiment(payload: VisitSentimentRequest) -> VisitSentimentResponse:
+    try:
+        result = log_manual_sentiment_visit(
+            customer_id=payload.customer_id,
+            salesperson_id=payload.salesperson_id,
+            sentiment=payload.sentiment,
+            database_path=_ensure_database(),
+        )
+    except ValueError as exc:
+        status_code = 404 if "not found" in str(exc).lower() else 400
+        raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+    return VisitSentimentResponse(**result)
 
 
 @router.get("/admin/dashboard")

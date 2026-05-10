@@ -6,7 +6,7 @@ import sqlite3
 from datetime import date, datetime
 from pathlib import Path
 
-from app.data.generate import DEFAULT_OUTPUT
+from app.data.generate import DEFAULT_OUTPUT, ensure_runtime_schema
 from app.ml.score import score_customer_row, top_customers_for_salesperson
 
 OUTCOME_WEIGHT: dict[str, float] = {
@@ -38,7 +38,8 @@ def _visit_signal(connection: sqlite3.Connection, customer_id: str) -> tuple[flo
         notes = row["notes"] or ""
         if "| next:" in notes:
             weight += 4.0
-        if str(row["id"]).startswith("visit-ai-"):
+        visit_id = str(row["id"])
+        if visit_id.startswith("visit-ai-") or visit_id.startswith("visit-sentiment-"):
             weight += 2.5
         total += weight
 
@@ -90,6 +91,7 @@ def build_manager_dashboard(
 ) -> dict[str, object]:
     with sqlite3.connect(database_path) as connection:
         connection.row_factory = sqlite3.Row
+        ensure_runtime_schema(connection)
 
         salespeople = connection.execute(
             """
@@ -118,7 +120,7 @@ def build_manager_dashboard(
                 FROM visit_history vh
                 JOIN customers c ON c.id = vh.customer_id
                 WHERE c.assigned_salesperson_id = ?
-                  AND vh.id LIKE 'visit-ai-%'
+                  AND (vh.id LIKE 'visit-ai-%' OR vh.id LIKE 'visit-sentiment-%')
                 """,
                 (sp_id,),
             ).fetchone()
@@ -130,7 +132,7 @@ def build_manager_dashboard(
                 FROM visit_history vh
                 JOIN customers c ON c.id = vh.customer_id
                 WHERE c.assigned_salesperson_id = ?
-                  AND vh.id LIKE 'visit-ai-%'
+                  AND (vh.id LIKE 'visit-ai-%' OR vh.id LIKE 'visit-sentiment-%')
                   AND vh.outcome IN ('order', 'follow_up', 'closed')
                   AND substr(vh.visited_at, 1, 10) >= date('now', '-30 days')
                 """,
@@ -171,10 +173,16 @@ def build_manager_dashboard(
                    c.assigned_salesperson_id, s.name AS salesperson_name,
                    c.lat, c.lng,
                    c.last_visit_days, c.priority, c.avg_order_value_rm, c.open_pipeline_rm,
-                   c.reorder_probability
+                   c.reorder_probability,
+                   cs.initial_confidence_score AS sentiment_initial_confidence_score,
+                   cs.current_confidence_score AS sentiment_confidence_score,
+                   cs.sentiment AS sentiment_label,
+                   cs.source AS sentiment_source,
+                   cs.updated_at AS sentiment_updated_at
             FROM customers c
             JOIN territories t ON t.id = c.territory_id
             JOIN salespeople s ON s.id = c.assigned_salesperson_id
+            LEFT JOIN customer_sentiment cs ON cs.customer_id = c.id
             """
         ).fetchall()
 
@@ -200,6 +208,15 @@ def build_manager_dashboard(
                     "last_visit_outcome": last_outcome,
                     "future_potential_baseline": baseline,
                     "future_potential_index": fut,
+                    "sentiment_initial_confidence_score": row["sentiment_initial_confidence_score"]
+                    if row["sentiment_initial_confidence_score"] is not None
+                    else 0.5,
+                    "sentiment_confidence_score": row["sentiment_confidence_score"]
+                    if row["sentiment_confidence_score"] is not None
+                    else 0.5,
+                    "sentiment_label": row["sentiment_label"] or "neutral",
+                    "sentiment_source": row["sentiment_source"] or "initial",
+                    "sentiment_updated_at": row["sentiment_updated_at"],
                 }
             )
 
@@ -211,18 +228,39 @@ def build_manager_dashboard(
         avg_before = round(sum(baselines) / len(baselines), 1) if baselines else 0.0
         avg_after = round(sum(futures) / len(futures), 1) if futures else 0.0
 
+        latest_sentiment = connection.execute(
+            """
+            SELECT cs.customer_id, c.name AS customer_name,
+                   cs.initial_confidence_score, cs.current_confidence_score,
+                   cs.sentiment, cs.source, cs.updated_at
+            FROM customer_sentiment cs
+            JOIN customers c ON c.id = cs.customer_id
+            ORDER BY cs.updated_at DESC
+            LIMIT 1
+            """
+        ).fetchone()
+
+        latest_sentiment_pool = (
+            [
+                r
+                for r in raw_rankings
+                if latest_sentiment is not None and r["customer_id"] == latest_sentiment["customer_id"]
+            ]
+            if latest_sentiment is not None
+            else []
+        )
         spotlight_pool = [r for r in raw_rankings if r.get("last_visit_outcome") in _SATISFIED_OUTCOMES]
         search_pool = spotlight_pool or raw_rankings
         spotlight_customer_name: str | None = None
         spotlight_before = 0.0
         spotlight_after = 0.0
         spotlight_outcome: str | None = None
-        if search_pool:
+        if latest_sentiment_pool or search_pool:
 
             def _lift(record: dict[str, object]) -> float:
                 return float(record["future_potential_index"]) - float(record["future_potential_baseline"])
 
-            best_row = max(search_pool, key=_lift)
+            best_row = latest_sentiment_pool[0] if latest_sentiment_pool else max(search_pool, key=_lift)
             spotlight_customer_name = str(best_row["customer_name"])
             spotlight_before = float(best_row["future_potential_baseline"])
             spotlight_after = float(best_row["future_potential_index"])
@@ -241,6 +279,27 @@ def build_manager_dashboard(
             "spotlight_before": round(spotlight_before, 1),
             "spotlight_after": round(spotlight_after, 1),
             "spotlight_outcome": spotlight_outcome,
+            "spotlight_confidence_before": round(
+                float(latest_sentiment["initial_confidence_score"]) * 100,
+                1,
+            )
+            if latest_sentiment is not None
+            else None,
+            "spotlight_confidence_after": round(
+                float(latest_sentiment["current_confidence_score"]) * 100,
+                1,
+            )
+            if latest_sentiment is not None
+            else None,
+            "spotlight_sentiment": str(latest_sentiment["sentiment"])
+            if latest_sentiment is not None
+            else None,
+            "spotlight_sentiment_source": str(latest_sentiment["source"])
+            if latest_sentiment is not None
+            else None,
+            "spotlight_sentiment_updated_at": str(latest_sentiment["updated_at"])
+            if latest_sentiment is not None
+            else None,
         }
 
         picks: list[dict[str, object]] = [
@@ -266,6 +325,7 @@ def build_manager_dashboard(
             JOIN salespeople s ON s.id = vh.salesperson_id
             JOIN territories t ON t.id = c.territory_id
             WHERE vh.id LIKE 'visit-ai-%'
+               OR vh.id LIKE 'visit-sentiment-%'
             ORDER BY vh.visited_at DESC
             LIMIT 40
             """
@@ -304,10 +364,10 @@ def build_manager_dashboard(
         "recent_ai_recaps": recent_ai_recaps,
         "ranking_note": (
             "Future potential blends RouteIQ score with recent visit outcomes; "
-            "structured AI recaps (notes with ' | next: ') add extra positive weight."
+            "structured AI recaps and quick sentiment evaluations add extra visit signal."
         ),
         "recap_monitor_note": (
-            "Below: each row is a persisted AI visit recap (sales conversation → structured outcome). "
+            "Below: each row is a persisted AI recap or quick visit sentiment evaluation. "
             "Use it to see which companies showed interest (order, follow-up, closed) vs no interest."
         ),
         "recap_impact": recap_impact,

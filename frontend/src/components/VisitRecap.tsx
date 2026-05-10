@@ -1,7 +1,13 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition'
-import { recapVisit, type VisitRecap as VisitRecapType } from '../lib/api'
+import {
+  logVisitSentiment,
+  recapVisit,
+  type VisitRecap as VisitRecapType,
+  type VisitSentiment,
+  type VisitSentimentResult,
+} from '../lib/api'
 import { Mascot } from './Mascot'
 
 type VisitRecapProps = {
@@ -14,6 +20,20 @@ type VisitRecapProps = {
 const SAMPLE_TRANSCRIPT =
   "Met with the project manager. They were happy with the recent anchor delivery and asked for a firestop quote for two more sites. Want me to send a formal proposal next Tuesday."
 
+const QUICK_SENTIMENTS: { id: VisitSentiment; label: string }[] = [
+  { id: 'very_negative', label: 'Very negative' },
+  { id: 'negative', label: 'Negative' },
+  { id: 'neutral', label: 'Neutral' },
+  { id: 'positive', label: 'Positive' },
+  { id: 'very_positive', label: 'Very positive' },
+]
+
+function sentimentTone(sentiment: string): 'positive' | 'neutral' | 'negative' {
+  if (sentiment.includes('positive')) return 'positive'
+  if (sentiment.includes('negative')) return 'negative'
+  return 'neutral'
+}
+
 export function VisitRecapPanel({
   customerId,
   customerName,
@@ -22,14 +42,10 @@ export function VisitRecapPanel({
 }: VisitRecapProps) {
   const [transcript, setTranscript] = useState('')
   const [recap, setRecap] = useState<VisitRecapType | null>(null)
+  const [quickResult, setQuickResult] = useState<VisitSentimentResult | null>(null)
   const [loading, setLoading] = useState(false)
+  const [quickSaving, setQuickSaving] = useState<VisitSentiment | null>(null)
   const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    setTranscript('')
-    setRecap(null)
-    setError(null)
-  }, [customerId])
 
   const handleResult = useCallback((text: string) => {
     setTranscript(text)
@@ -65,6 +81,7 @@ export function VisitRecapPanel({
         transcript: transcript.trim(),
       })
       setRecap(result)
+      setQuickResult(null)
       if (result.persisted) {
         onPersisted()
       }
@@ -77,6 +94,27 @@ export function VisitRecapPanel({
       )
     } finally {
       setLoading(false)
+    }
+  }
+
+  const submitQuickSentiment = async (sentiment: VisitSentiment) => {
+    if (quickSaving || loading) return
+    stopListening()
+    setQuickSaving(sentiment)
+    setError(null)
+    try {
+      const result = await logVisitSentiment({
+        customerId,
+        salespersonId,
+        sentiment,
+      })
+      setQuickResult(result)
+      setRecap(null)
+      onPersisted()
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Could not save visit sentiment.')
+    } finally {
+      setQuickSaving(null)
     }
   }
 
@@ -129,6 +167,23 @@ export function VisitRecapPanel({
         </button>
       </div>
 
+      <div className="quick-sentiment" aria-label="Quick visit sentiment">
+        <span>Quick sentiment</span>
+        <div className="quick-sentiment-grid">
+          {QUICK_SENTIMENTS.map((option) => (
+            <button
+              className={`quick-sentiment-button quick-sentiment-button--${sentimentTone(option.id)}`}
+              disabled={loading || quickSaving !== null}
+              key={option.id}
+              onClick={() => void submitQuickSentiment(option.id)}
+              type="button"
+            >
+              {quickSaving === option.id ? 'Saving...' : option.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {error || speechError ? <p className="status error">{error ?? speechError}</p> : null}
 
       {recap ? (
@@ -139,7 +194,10 @@ export function VisitRecapPanel({
               {recap.sentiment}
             </span>
             <span className="confidence-pill">
-              {Math.round(recap.confidence * 100)}% confidence
+              AI {Math.round(recap.confidence * 100)}%
+            </span>
+            <span className="confidence-pill">
+              {Math.round(recap.sentiment_confidence_score * 100)}% customer confidence
             </span>
           </header>
           <p className="recap-summary">{recap.summary}</p>
@@ -171,6 +229,25 @@ export function VisitRecapPanel({
               </div>
             ) : null}
           </dl>
+        </article>
+      ) : null}
+
+      {quickResult ? (
+        <article className="recap-result">
+          <header className="recap-result-header">
+            <strong>Visit sentiment saved</strong>
+            <span className={`sentiment-pill sentiment-${sentimentTone(quickResult.sentiment)}`}>
+              {quickResult.sentiment_label}
+            </span>
+            <span className="confidence-pill">
+              {Math.round(quickResult.sentiment_confidence_score * 100)}% customer confidence
+            </span>
+          </header>
+          <p className="recap-summary">
+            Manager dashboard confidence moved from{' '}
+            {Math.round(quickResult.previous_sentiment_confidence_score * 100)}% to{' '}
+            {Math.round(quickResult.sentiment_confidence_score * 100)}%.
+          </p>
         </article>
       ) : null}
     </section>

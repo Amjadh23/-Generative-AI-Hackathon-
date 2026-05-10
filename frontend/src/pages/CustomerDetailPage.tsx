@@ -135,6 +135,10 @@ export function CustomerDetailPage({
               <span>Reorder probability</span>
               <strong>{percentFormatter.format(customer.reorder_probability)}</strong>
             </article>
+            <article>
+              <span>Visit confidence</span>
+              <strong>{percentFormatter.format(customer.sentiment_confidence_score)}</strong>
+            </article>
           </section>
 
           <MascotTip
@@ -204,6 +208,7 @@ export function CustomerDetailPage({
           <VisitRecapPanel
             customerId={customer.id}
             customerName={customer.name}
+            key={customer.id}
             onPersisted={() => {
               void onAfterVisitLogged()
               void loadCustomer()

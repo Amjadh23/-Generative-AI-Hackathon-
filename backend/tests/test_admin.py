@@ -1,6 +1,8 @@
+import sqlite3
+
 from fastapi.testclient import TestClient
 
-from app.data.generate import DEFAULT_OUTPUT, seed_database
+from app.data.generate import DEFAULT_OUTPUT, ensure_runtime_schema, seed_database
 from app.main import app
 
 client = TestClient(app)
@@ -62,3 +64,45 @@ def test_admin_assign_customer() -> None:
             json={"salesperson_id": cust["assigned_salesperson_id"]},
         )
         assert revert.status_code == 200
+
+
+def test_admin_dashboard_spotlights_latest_sentiment_confidence() -> None:
+    if not DEFAULT_OUTPUT.exists():
+        seed_database(DEFAULT_OUTPUT)
+    with sqlite3.connect(DEFAULT_OUTPUT) as connection:
+        ensure_runtime_schema(connection)
+        previous_last_visit_days = connection.execute(
+            "SELECT last_visit_days FROM customers WHERE id = ?",
+            ("cust-0004",),
+        ).fetchone()[0]
+        connection.execute("DELETE FROM customer_sentiment")
+        connection.commit()
+
+    sentiment_response = client.post(
+        "/visits/sentiment",
+        json={
+            "customer_id": "cust-0004",
+            "salesperson_id": "sp-kl-central",
+            "sentiment": "negative",
+        },
+    )
+    assert sentiment_response.status_code == 201, sentiment_response.text
+    visit_id = sentiment_response.json()["visit_id"]
+
+    try:
+        dashboard_response = client.get("/admin/dashboard")
+        assert dashboard_response.status_code == 200
+        impact = dashboard_response.json()["recap_impact"]
+        assert impact["spotlight_confidence_before"] == 50.0
+        assert impact["spotlight_confidence_after"] == 30.0
+        assert impact["spotlight_sentiment"] == "negative"
+        assert impact["spotlight_sentiment_source"] == "quick_button"
+    finally:
+        with sqlite3.connect(DEFAULT_OUTPUT) as connection:
+            connection.execute("DELETE FROM customer_sentiment WHERE customer_id = ?", ("cust-0004",))
+            connection.execute("DELETE FROM visit_history WHERE id = ?", (visit_id,))
+            connection.execute(
+                "UPDATE customers SET last_visit_days = ? WHERE id = ?",
+                (previous_last_visit_days, "cust-0004"),
+            )
+            connection.commit()

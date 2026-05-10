@@ -68,6 +68,7 @@ def create_schema(connection: sqlite3.Connection) -> None:
     connection.executescript(
         """
         DROP TABLE IF EXISTS orders;
+        DROP TABLE IF EXISTS customer_sentiment;
         DROP TABLE IF EXISTS visit_history;
         DROP TABLE IF EXISTS customers;
         DROP TABLE IF EXISTS salespeople;
@@ -114,6 +115,18 @@ def create_schema(connection: sqlite3.Connection) -> None:
             notes TEXT
         );
 
+        CREATE TABLE customer_sentiment (
+            customer_id TEXT PRIMARY KEY REFERENCES customers(id),
+            initial_confidence_score REAL NOT NULL DEFAULT 0.5,
+            current_confidence_score REAL NOT NULL DEFAULT 0.5,
+            sentiment TEXT NOT NULL DEFAULT 'neutral',
+            source TEXT NOT NULL DEFAULT 'initial',
+            updated_at TEXT NOT NULL
+        );
+
+        CREATE INDEX idx_customer_sentiment_updated_at
+            ON customer_sentiment(updated_at);
+
         CREATE TABLE orders (
             id TEXT PRIMARY KEY,
             customer_id TEXT NOT NULL REFERENCES customers(id),
@@ -121,6 +134,25 @@ def create_schema(connection: sqlite3.Connection) -> None:
             amount_rm REAL NOT NULL,
             product_family TEXT NOT NULL
         );
+        """
+    )
+
+
+def ensure_runtime_schema(connection: sqlite3.Connection) -> None:
+    """Apply additive tables needed by the app when an older seed DB already exists."""
+    connection.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS customer_sentiment (
+            customer_id TEXT PRIMARY KEY REFERENCES customers(id),
+            initial_confidence_score REAL NOT NULL DEFAULT 0.5,
+            current_confidence_score REAL NOT NULL DEFAULT 0.5,
+            sentiment TEXT NOT NULL DEFAULT 'neutral',
+            source TEXT NOT NULL DEFAULT 'initial',
+            updated_at TEXT NOT NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_customer_sentiment_updated_at
+            ON customer_sentiment(updated_at);
         """
     )
 

@@ -40,6 +40,10 @@ function formatVisitedAt(iso: string): string {
   return t ? `${d} · ${t}` : d
 }
 
+function formatConfidence(value: number | null | undefined, fallback = 50): string {
+  return `${Math.round(value ?? fallback)}%`
+}
+
 export function ManagerPage({ onBack }: ManagerPageProps) {
   const [data, setData] = useState<ManagerDashboard | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -65,6 +69,9 @@ export function ManagerPage({ onBack }: ManagerPageProps) {
   }, [])
 
   const impact = data?.recap_impact
+  const hasSentimentSpotlight =
+    typeof impact?.spotlight_confidence_before === 'number' &&
+    typeof impact?.spotlight_confidence_after === 'number'
 
   const filteredRecaps = useMemo(() => {
     const rows = data?.recent_ai_recaps ?? []
@@ -81,7 +88,7 @@ export function ManagerPage({ onBack }: ManagerPageProps) {
 
       <header className="manager-header">
         <p className="eyebrow">Manager</p>
-        <h2>Recaps &amp; future potential</h2>
+        <h2>Opportunity confidence</h2>
       </header>
 
       {error ? <p className="status error">{error}</p> : null}
@@ -98,14 +105,14 @@ export function ManagerPage({ onBack }: ManagerPageProps) {
                 <span>
                   {rep.interested_recaps_30d} warm recap{rep.interested_recaps_30d === 1 ? '' : 's'} (30d)
                   {' · '}
-                  {rep.ai_recap_visit_count} AI total
+                  {rep.ai_recap_visit_count} evaluations total
                 </span>
               </div>
             ))}
           </div>
 
           <div className="manager-recap-toolbar">
-            <h3>After visit — AI recap outcomes</h3>
+            <h3>After visit - evaluated outcomes</h3>
             <label className="manager-filter-toggle">
               <input
                 checked={interestedOnly}
@@ -120,8 +127,8 @@ export function ManagerPage({ onBack }: ManagerPageProps) {
             {filteredRecaps.length === 0 ? (
               <p className="manager-recap-empty">
                 {interestedOnly
-                  ? 'No interested recaps in this list. Turn off the filter or log more AI recaps from the field.'
-                  : 'No AI recaps yet. When reps save a voice recap, it will appear here with outcome and summary.'}
+                  ? 'No interested evaluations in this list. Turn off the filter or log more visit sentiment from the field.'
+                  : 'No visit evaluations yet. When reps save a voice recap or quick sentiment, it will appear here.'}
               </p>
             ) : (
               <table className="manager-recap-table">
@@ -169,39 +176,86 @@ export function ManagerPage({ onBack }: ManagerPageProps) {
 
       {impact ? (
         <>
-          <p className="manager-lead">{impact.headline}</p>
-          <p className="manager-sublead">{impact.subhead}</p>
+          <p className="manager-lead">Fresh visit sentiment turns field notes into account confidence.</p>
+          <p className="manager-sublead">
+            Every account starts at 50%. AI recaps and quick visit buttons move that score after the rep meets the customer.
+          </p>
+
+          <div className="manager-story-card manager-spotlight">
+            <h3 className="manager-story-title">Opportunity confidence</h3>
+            <p className="manager-spotlight-name">
+              {hasSentimentSpotlight
+                ? impact.spotlight_customer_name
+                : 'No visit sentiment recorded yet'}
+            </p>
+            <div className="manager-spotlight-compare">
+              <div>
+                <span className="manager-spotlight-k">
+                  {hasSentimentSpotlight ? 'Initial' : 'Baseline'}
+                </span>
+                <strong>{formatConfidence(impact.spotlight_confidence_before)}</strong>
+              </div>
+              <span aria-hidden className="manager-spotlight-arrow">
+                -&gt;
+              </span>
+              <div>
+                <span className="manager-spotlight-k">After visit</span>
+                <strong>
+                  {hasSentimentSpotlight
+                    ? formatConfidence(impact.spotlight_confidence_after)
+                    : '--'}
+                </strong>
+              </div>
+            </div>
+            <p className="manager-spotlight-outcome">
+              {hasSentimentSpotlight ? (
+                <>
+                  Sentiment:{' '}
+                  <span className="manager-outcome-pill">
+                    {formatSegment(impact.spotlight_sentiment ?? 'neutral')}
+                  </span>
+                  {impact.spotlight_sentiment_source ? (
+                    <span className="manager-spotlight-source">
+                      {formatSegment(impact.spotlight_sentiment_source)}
+                    </span>
+                  ) : null}
+                </>
+              ) : (
+                'Waiting for the next AI recap or quick sentiment evaluation.'
+              )}
+            </p>
+          </div>
 
           <div className="manager-story-card">
-            <h3 className="manager-story-title">Team average</h3>
+            <h3 className="manager-story-title">Team future potential</h3>
             <MeterRow
-              hint="From territory and CRM data only — no recent visit story yet."
-              label="Before visits & recaps"
+              hint="Territory, CRM, order history, and route scoring before fresh field sentiment."
+              label="Planning baseline"
               value={impact.avg_before}
               variant="before"
             />
             <MeterRow
-              hint="After logging satisfied outcomes and structured recaps."
-              label="After satisfied visits"
+              hint="Updated with recent visit outcomes, structured recaps, and quick sentiment signals."
+              label="After field signals"
               value={impact.avg_after}
               variant="after"
             />
           </div>
 
-          {impact.spotlight_customer_name ? (
+          {!hasSentimentSpotlight && impact.spotlight_customer_name ? (
             <div className="manager-story-card manager-spotlight">
-              <h3 className="manager-story-title">Example account</h3>
+              <h3 className="manager-story-title">Top potential movement</h3>
               <p className="manager-spotlight-name">{impact.spotlight_customer_name}</p>
               <div className="manager-spotlight-compare">
                 <div>
-                  <span className="manager-spotlight-k">Was</span>
+                  <span className="manager-spotlight-k">Planning baseline</span>
                   <strong>{impact.spotlight_before}</strong>
                 </div>
                 <span aria-hidden className="manager-spotlight-arrow">
                   →
                 </span>
                 <div>
-                  <span className="manager-spotlight-k">Now</span>
+                  <span className="manager-spotlight-k">Current signal</span>
                   <strong>{impact.spotlight_after}</strong>
                 </div>
               </div>

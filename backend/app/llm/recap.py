@@ -8,8 +8,9 @@ from pathlib import Path
 from typing import Any
 
 from app.core.schemas import VisitRecapResponse
-from app.data.generate import DEFAULT_OUTPUT, PRODUCT_FAMILIES
+from app.data.generate import DEFAULT_OUTPUT, PRODUCT_FAMILIES, ensure_runtime_schema
 from app.llm.client import LLMError, chat_json
+from app.sentiment.service import persist_customer_sentiment, score_from_ai_sentiment
 
 VALID_OUTCOMES = ["order", "follow_up", "no_interest", "closed"]
 VALID_SENTIMENTS = ["positive", "neutral", "negative"]
@@ -31,7 +32,10 @@ Read the transcript and output ONLY this JSON object:
 Allowed product families: anchors, power_tools, firestop, measuring, fasteners.
 If a product is mentioned but doesn't fit, omit it.
 Be honest about confidence. If the note is vague, use lower confidence and
-sensible defaults (outcome=follow_up, sentiment=neutral)."""
+sensible defaults (outcome=follow_up, sentiment=neutral). Use negative
+sentiment for no-interest or unhappy visits, positive sentiment for orders,
+closed-won visits, or clear follow-up interest, and neutral only for mixed
+or unclear notes."""
 
 
 def _normalize_outcome(value: Any) -> str:
@@ -85,11 +89,15 @@ def _persist_visit(
     salesperson_id: str,
     outcome: str,
     note: str,
+    sentiment: str,
+    sentiment_confidence_score: float,
     database_path: Path,
-) -> str:
+) -> tuple[str, float]:
     visit_id = f"visit-ai-{datetime.now().strftime('%H%M%S%f')[:-3]}"
     visited_at = datetime.now().isoformat(timespec="seconds")
     with sqlite3.connect(database_path) as connection:
+        connection.row_factory = sqlite3.Row
+        ensure_runtime_schema(connection)
         connection.execute(
             "INSERT INTO visit_history VALUES (?, ?, ?, ?, ?, ?)",
             (visit_id, customer_id, salesperson_id, visited_at, outcome, note),
@@ -98,8 +106,16 @@ def _persist_visit(
             "UPDATE customers SET last_visit_days = 0 WHERE id = ?",
             (customer_id,),
         )
+        previous_score = persist_customer_sentiment(
+            connection,
+            customer_id=customer_id,
+            sentiment=sentiment,
+            confidence_score=sentiment_confidence_score,
+            source="ai_recap",
+            updated_at=visited_at,
+        )
         connection.commit()
-    return visit_id
+    return visit_id, previous_score
 
 
 def build_recap(
@@ -128,18 +144,22 @@ def build_recap(
     next_action = str(payload.get("next_action") or "Follow up with the customer.").strip()
     due_date = _coerce_due_date(payload)
     confidence = _coerce_confidence(payload.get("confidence"))
+    sentiment_confidence_score = score_from_ai_sentiment(sentiment, confidence)
 
     persisted = False
     visit_id: str | None = None
+    previous_sentiment_confidence_score: float | None = None
     if persist:
         note = f"{summary} | next: {next_action}"
         if due_date:
             note += f" (by {due_date})"
-        visit_id = _persist_visit(
+        visit_id, previous_sentiment_confidence_score = _persist_visit(
             customer_id=customer_id,
             salesperson_id=salesperson_id,
             outcome=outcome,
             note=note,
+            sentiment=sentiment,
+            sentiment_confidence_score=sentiment_confidence_score,
             database_path=database_path,
         )
         persisted = True
@@ -154,5 +174,7 @@ def build_recap(
         products_mentioned=products,
         sentiment=sentiment,
         confidence=confidence,
+        previous_sentiment_confidence_score=previous_sentiment_confidence_score,
+        sentiment_confidence_score=sentiment_confidence_score,
         raw_transcript=transcript.strip(),
     )

@@ -83,7 +83,25 @@ class VisitRecapResponse(BaseModel):
     products_mentioned: list[str] = Field(default_factory=list)
     sentiment: str
     confidence: float = Field(ge=0, le=1)
+    previous_sentiment_confidence_score: float | None = Field(default=None, ge=0, le=1)
+    sentiment_confidence_score: float = Field(ge=0, le=1)
     raw_transcript: str
+
+
+class VisitSentimentRequest(BaseModel):
+    customer_id: str
+    salesperson_id: str
+    sentiment: str = Field(min_length=1, max_length=32)
+
+
+class VisitSentimentResponse(BaseModel):
+    visit_id: str
+    status: str
+    sentiment: str
+    sentiment_label: str
+    outcome: str
+    previous_sentiment_confidence_score: float = Field(ge=0, le=1)
+    sentiment_confidence_score: float = Field(ge=0, le=1)
 
 
 class CustomerAssignmentPayload(BaseModel):
