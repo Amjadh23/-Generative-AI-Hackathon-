@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Hilti RouteIQ">
+  <rect width="512" height="512" rx="112" fill="#d2051e"/>
+  <path d="M120 360c50 0 80-100 136-100s86 100 136 100"
+        fill="none" stroke="#ffffff" stroke-width="34"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="120" cy="360" r="34" fill="#ffffff"/>
+  <circle cx="392" cy="360" r="34" fill="#ffffff"/>
+  <path d="M256 110v140m0 0-58-58m58 58 58-58"
+        fill="none" stroke="#ffffff" stroke-width="34"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,6 @@
+fastapi[standard]
+pydantic
+python-dotenv
+pytest
+numpy
+xgboost

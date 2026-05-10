@@ -1,0 +1,401 @@
+id,name,segment,territory_id,assigned_salesperson_id,lat,lng,priority,avg_order_value_rm,open_pipeline_rm,last_visit_days,reorder_probability
+cust-0001,Apex Construction 001,maintenance,terr-kl-central,sp-kl-central,3.174344,101.651225,2,13517.98,12423.14,99,0.776
+cust-0002,Bintang Engineering 002,project_site,terr-kl-central,sp-kl-central,3.135542,101.690523,1,11068.14,16509.55,93,0.628
+cust-0003,Cahaya Industrial 003,distributor,terr-kl-central,sp-kl-central,3.166478,101.6684,3,6548.85,4435.88,41,0.663
+cust-0004,Delta Buildmart 004,distributor,terr-kl-central,sp-kl-central,3.143537,101.713856,4,7126.64,3569.49,64,0.829
+cust-0005,Eagle Contractors 005,distributor,terr-kl-central,sp-kl-central,3.1686,101.691866,5,3220.97,2508.45,112,0.95
+cust-0006,Fortis Site Services 006,distributor,terr-kl-central,sp-kl-central,3.150825,101.692519,1,4318.84,7488.98,47,0.509
+cust-0007,Gemilang Project Supply 007,maintenance,terr-kl-central,sp-kl-central,3.163498,101.715233,3,13688.39,21168.64,99,0.835
+cust-0008,Harapan Trading 008,distributor,terr-kl-central,sp-kl-central,3.0994,101.704719,5,11236.66,15671.1,6,0.716
+cust-0009,Ikon Construction 009,contractor,terr-kl-central,sp-kl-central,3.117958,101.710979,2,10290.3,3893.0,48,0.55
+cust-0010,Jaya Engineering 010,contractor,terr-kl-central,sp-kl-central,3.134938,101.667931,3,10183.66,15914.71,54,0.712
+cust-0011,Kencana Industrial 011,maintenance,terr-kl-central,sp-kl-central,3.161111,101.674788,4,5734.58,8727.66,10,0.727
+cust-0012,Metro Buildmart 012,contractor,terr-kl-central,sp-kl-central,3.12493,101.632085,3,14699.65,21068.87,32,0.705
+cust-0013,Apex Contractors 013,project_site,terr-kl-central,sp-kl-central,3.13302,101.664202,4,9261.88,7019.71,102,0.95
+cust-0014,Bintang Site Services 014,maintenance,terr-kl-central,sp-kl-central,3.178637,101.682702,5,3918.72,3473.98,109,0.95
+cust-0015,Cahaya Project Supply 015,project_site,terr-kl-central,sp-kl-central,3.134523,101.679275,3,6183.53,9367.12,15,0.524
+cust-0016,Delta Trading 016,distributor,terr-kl-central,sp-kl-central,3.141509,101.701521,1,11698.24,19645.41,64,0.601
+cust-0017,Eagle Construction 017,contractor,terr-kl-central,sp-kl-central,3.120755,101.679725,5,11868.17,19485.74,17,0.819
+cust-0018,Fortis Engineering 018,contractor,terr-kl-central,sp-kl-central,3.106127,101.657363,4,10866.51,15394.1,62,0.892
+cust-0019,Gemilang Industrial 019,contractor,terr-kl-central,sp-kl-central,3.154613,101.740523,4,11158.09,13794.28,7,0.641
+cust-0020,Harapan Buildmart 020,contractor,terr-kl-central,sp-kl-central,3.166324,101.676049,3,9061.46,16009.68,55,0.753
+cust-0021,Ikon Contractors 021,distributor,terr-kl-central,sp-kl-central,3.137891,101.687346,5,8134.67,3978.34,10,0.776
+cust-0022,Jaya Site Services 022,project_site,terr-kl-central,sp-kl-central,3.152408,101.646608,4,11388.15,14447.49,16,0.754
+cust-0023,Kencana Project Supply 023,project_site,terr-kl-central,sp-kl-central,3.128329,101.693866,4,7110.81,10110.69,88,0.948
+cust-0024,Metro Trading 024,distributor,terr-kl-central,sp-kl-central,3.12033,101.728419,2,10579.65,13412.09,34,0.58
+cust-0025,Apex Construction 025,contractor,terr-kl-central,sp-kl-central,3.182122,101.652587,4,12151.26,3601.79,39,0.847
+cust-0026,Bintang Engineering 026,maintenance,terr-kl-central,sp-kl-central,3.171974,101.732359,5,8744.51,13135.79,57,0.95
+cust-0027,Cahaya Industrial 027,project_site,terr-kl-central,sp-kl-central,3.165876,101.736037,2,8331.68,8797.43,59,0.596
+cust-0028,Delta Buildmart 028,project_site,terr-kl-central,sp-kl-central,3.146472,101.692523,5,6638.79,5990.45,61,0.95
+cust-0029,Eagle Contractors 029,contractor,terr-kl-central,sp-kl-central,3.16744,101.648838,1,8352.38,6617.07,62,0.598
+cust-0030,Fortis Site Services 030,project_site,terr-kl-central,sp-kl-central,3.196464,101.692796,3,2963.93,3024.77,16,0.512
+cust-0031,Gemilang Project Supply 031,project_site,terr-kl-central,sp-kl-central,3.173097,101.684984,3,13975.72,8471.96,50,0.623
+cust-0032,Harapan Trading 032,distributor,terr-kl-central,sp-kl-central,3.101101,101.682531,3,4683.82,1338.74,118,0.95
+cust-0033,Ikon Construction 033,contractor,terr-kl-central,sp-kl-central,3.112093,101.685503,4,15650.57,18222.86,30,0.69
+cust-0034,Jaya Engineering 034,maintenance,terr-kl-central,sp-kl-central,3.162897,101.687906,4,15571.95,9834.91,102,0.95
+cust-0035,Kencana Industrial 035,distributor,terr-kl-central,sp-kl-central,3.165453,101.635676,2,13485.15,23517.33,97,0.737
+cust-0036,Metro Buildmart 036,contractor,terr-kl-central,sp-kl-central,3.132437,101.639469,4,11822.4,16619.3,14,0.698
+cust-0037,Apex Contractors 037,distributor,terr-kl-central,sp-kl-central,3.180853,101.670966,3,2524.29,585.87,64,0.74
+cust-0038,Bintang Site Services 038,distributor,terr-kl-central,sp-kl-central,3.182934,101.720834,3,8333.76,9183.57,56,0.805
+cust-0039,Cahaya Project Supply 039,project_site,terr-kl-central,sp-kl-central,3.159816,101.639793,5,6664.85,6319.08,98,0.95
+cust-0040,Delta Trading 040,contractor,terr-kl-central,sp-kl-central,3.086862,101.705354,2,13310.17,12573.08,45,0.529
+cust-0041,Eagle Construction 041,distributor,terr-kl-central,sp-kl-central,3.147926,101.723967,2,8487.43,2953.31,56,0.628
+cust-0042,Fortis Engineering 042,maintenance,terr-kl-central,sp-kl-central,3.133559,101.637694,1,2388.94,2446.62,28,0.38
+cust-0043,Gemilang Industrial 043,contractor,terr-kl-central,sp-kl-central,3.134117,101.727185,2,11427.32,13903.7,45,0.635
+cust-0044,Harapan Buildmart 044,contractor,terr-kl-central,sp-kl-central,3.10849,101.733384,3,12341.4,2606.22,87,0.917
+cust-0045,Ikon Contractors 045,project_site,terr-kl-central,sp-kl-central,3.144149,101.73559,2,13412.69,5934.29,36,0.555
+cust-0046,Jaya Site Services 046,distributor,terr-kl-central,sp-kl-central,3.170949,101.673465,1,2586.36,1734.67,77,0.601
+cust-0047,Kencana Project Supply 047,contractor,terr-kl-central,sp-kl-central,3.133594,101.685869,3,14020.74,9780.74,36,0.578
+cust-0048,Metro Trading 048,contractor,terr-kl-central,sp-kl-central,3.168068,101.642985,5,8773.95,9233.99,95,0.95
+cust-0049,Apex Construction 049,distributor,terr-kl-central,sp-kl-central,3.133331,101.652138,2,11820.26,8330.03,92,0.733
+cust-0050,Bintang Engineering 050,contractor,terr-kl-central,sp-kl-central,3.16087,101.667337,4,10390.11,14108.24,83,0.935
+cust-0051,Cahaya Industrial 051,contractor,terr-kl-central,sp-kl-central,3.08643,101.685168,2,7348.85,4957.66,22,0.497
+cust-0052,Delta Buildmart 052,maintenance,terr-kl-central,sp-kl-central,3.155175,101.729576,2,9492.36,10883.64,101,0.787
+cust-0053,Eagle Contractors 053,contractor,terr-kl-central,sp-kl-central,3.140129,101.741847,2,6534.6,10044.72,103,0.735
+cust-0054,Fortis Site Services 054,contractor,terr-kl-central,sp-kl-central,3.131579,101.736531,5,14901.4,19279.19,109,0.95
+cust-0055,Gemilang Project Supply 055,project_site,terr-kl-central,sp-kl-central,3.175373,101.687081,2,7696.21,11222.26,69,0.656
+cust-0056,Harapan Trading 056,maintenance,terr-kl-central,sp-kl-central,3.099932,101.701311,2,2489.0,4008.29,90,0.782
+cust-0057,Ikon Construction 057,project_site,terr-kl-central,sp-kl-central,3.135726,101.726375,4,14965.47,22238.3,73,0.95
+cust-0058,Jaya Engineering 058,distributor,terr-kl-central,sp-kl-central,3.138568,101.73266,3,7791.92,4455.41,81,0.875
+cust-0059,Kencana Industrial 059,maintenance,terr-kl-central,sp-kl-central,3.151419,101.684208,2,1638.23,1381.51,105,0.846
+cust-0060,Metro Buildmart 060,project_site,terr-kl-central,sp-kl-central,3.163667,101.68524,4,7496.33,9333.37,113,0.95
+cust-0061,Apex Contractors 061,maintenance,terr-kl-central,sp-kl-central,3.184707,101.712826,3,9936.13,17721.89,80,0.855
+cust-0062,Bintang Site Services 062,project_site,terr-kl-central,sp-kl-central,3.142076,101.6454,5,8572.23,10345.15,31,0.894
+cust-0063,Cahaya Project Supply 063,project_site,terr-kl-central,sp-kl-central,3.179709,101.724039,3,14148.11,7847.85,30,0.552
+cust-0064,Delta Trading 064,maintenance,terr-kl-central,sp-kl-central,3.108093,101.679006,4,12555.57,9371.66,77,0.917
+cust-0065,Eagle Construction 065,project_site,terr-kl-central,sp-kl-central,3.153607,101.661189,1,12401.8,11994.82,64,0.534
+cust-0066,Fortis Engineering 066,maintenance,terr-kl-central,sp-kl-central,3.185386,101.700736,1,12399.23,14926.84,25,0.427
+cust-0067,Gemilang Industrial 067,distributor,terr-kl-central,sp-kl-central,3.168236,101.670822,5,4347.83,1158.23,105,0.95
+cust-0068,Harapan Buildmart 068,contractor,terr-kl-central,sp-kl-central,3.133213,101.715595,4,8934.56,2031.8,109,0.95
+cust-0069,Ikon Contractors 069,contractor,terr-kl-central,sp-kl-central,3.173471,101.696941,2,10223.73,2301.36,59,0.659
+cust-0070,Jaya Site Services 070,maintenance,terr-kl-central,sp-kl-central,3.185694,101.700855,1,11012.51,17034.42,6,0.251
+cust-0071,Kencana Project Supply 071,project_site,terr-kl-central,sp-kl-central,3.151388,101.730869,5,12476.46,8802.88,77,0.95
+cust-0072,Metro Trading 072,project_site,terr-kl-central,sp-kl-central,3.141087,101.7103,4,2032.2,3653.1,69,0.819
+cust-0073,Apex Construction 073,project_site,terr-kl-central,sp-kl-central,3.118355,101.703888,2,5060.17,5221.17,60,0.57
+cust-0074,Bintang Engineering 074,maintenance,terr-kl-central,sp-kl-central,3.179985,101.707104,4,14117.63,12186.31,6,0.714
+cust-0075,Cahaya Industrial 075,distributor,terr-kl-central,sp-kl-central,3.190118,101.668453,5,2997.97,5168.39,63,0.924
+cust-0076,Delta Buildmart 076,distributor,terr-kl-central,sp-kl-central,3.183139,101.704702,2,7489.33,5926.98,21,0.491
+cust-0077,Eagle Contractors 077,contractor,terr-kl-central,sp-kl-central,3.123545,101.708599,5,4557.87,1035.35,63,0.895
+cust-0078,Fortis Site Services 078,contractor,terr-kl-central,sp-kl-central,3.13053,101.655379,2,2974.15,1460.61,83,0.709
+cust-0079,Gemilang Project Supply 079,maintenance,terr-kl-central,sp-kl-central,3.176982,101.698947,5,4806.15,2196.64,67,0.929
+cust-0080,Harapan Trading 080,distributor,terr-kl-central,sp-kl-central,3.102325,101.699813,4,6744.66,7921.61,37,0.803
+cust-0081,Ikon Construction 081,contractor,terr-ampang,sp-ampang,3.148266,101.729927,5,7374.3,9938.1,23,0.812
+cust-0082,Jaya Engineering 082,maintenance,terr-ampang,sp-ampang,3.158459,101.734703,4,2862.96,3420.31,60,0.847
+cust-0083,Kencana Industrial 083,maintenance,terr-ampang,sp-ampang,3.127478,101.730676,5,13272.6,17215.52,46,0.865
+cust-0084,Metro Buildmart 084,project_site,terr-ampang,sp-ampang,3.172655,101.750592,3,7373.75,8519.74,47,0.743
+cust-0085,Apex Contractors 085,maintenance,terr-ampang,sp-ampang,3.152878,101.754671,3,6804.72,1706.59,14,0.57
+cust-0086,Bintang Site Services 086,contractor,terr-ampang,sp-ampang,3.146895,101.750327,5,10943.4,3849.8,26,0.878
+cust-0087,Cahaya Project Supply 087,distributor,terr-ampang,sp-ampang,3.187317,101.759777,3,4271.87,2068.22,119,0.95
+cust-0088,Delta Trading 088,maintenance,terr-ampang,sp-ampang,3.190266,101.751799,3,14932.0,18820.39,88,0.88
+cust-0089,Eagle Construction 089,maintenance,terr-ampang,sp-ampang,3.147107,101.792634,4,13487.3,7477.89,30,0.751
+cust-0090,Fortis Engineering 090,contractor,terr-ampang,sp-ampang,3.129139,101.750689,4,3988.21,7129.38,39,0.728
+cust-0091,Gemilang Industrial 091,maintenance,terr-ampang,sp-ampang,3.18546,101.765064,5,6704.64,12000.26,104,0.95
+cust-0092,Harapan Buildmart 092,distributor,terr-ampang,sp-ampang,3.140397,101.799065,3,3937.11,3021.88,75,0.726
+cust-0093,Ikon Contractors 093,distributor,terr-ampang,sp-ampang,3.105741,101.750676,5,15741.3,26033.59,67,0.95
+cust-0094,Jaya Site Services 094,distributor,terr-ampang,sp-ampang,3.187012,101.784415,4,8383.96,4356.75,78,0.849
+cust-0095,Kencana Project Supply 095,contractor,terr-ampang,sp-ampang,3.140897,101.803817,5,11035.02,4330.19,70,0.95
+cust-0096,Metro Trading 096,project_site,terr-ampang,sp-ampang,3.116571,101.789063,3,12068.9,19772.57,11,0.606
+cust-0097,Apex Construction 097,distributor,terr-ampang,sp-ampang,3.175609,101.781632,2,7071.99,6484.22,53,0.681
+cust-0098,Bintang Engineering 098,maintenance,terr-ampang,sp-ampang,3.104272,101.740884,2,1650.7,1100.77,111,0.77
+cust-0099,Cahaya Industrial 099,maintenance,terr-ampang,sp-ampang,3.147722,101.802398,4,11746.81,6924.22,30,0.675
+cust-0100,Delta Buildmart 100,project_site,terr-ampang,sp-ampang,3.149166,101.80345,5,5035.53,8106.08,66,0.95
+cust-0101,Eagle Contractors 101,distributor,terr-ampang,sp-ampang,3.182998,101.745006,5,4882.47,8294.64,68,0.95
+cust-0102,Fortis Site Services 102,contractor,terr-ampang,sp-ampang,3.134099,101.791715,5,8417.42,13395.28,84,0.95
+cust-0103,Gemilang Project Supply 103,project_site,terr-ampang,sp-ampang,3.123562,101.768032,4,6299.89,2066.85,15,0.751
+cust-0104,Harapan Trading 104,maintenance,terr-ampang,sp-ampang,3.142173,101.725687,4,9432.36,10633.69,17,0.612
+cust-0105,Ikon Construction 105,project_site,terr-ampang,sp-ampang,3.116132,101.751131,2,9608.56,11860.86,49,0.656
+cust-0106,Jaya Engineering 106,distributor,terr-ampang,sp-ampang,3.167157,101.769266,5,13751.83,6841.39,43,0.896
+cust-0107,Kencana Industrial 107,contractor,terr-ampang,sp-ampang,3.19242,101.746463,4,14944.04,6559.35,23,0.723
+cust-0108,Metro Buildmart 108,project_site,terr-ampang,sp-ampang,3.114509,101.793924,5,15404.12,25814.34,6,0.792
+cust-0109,Apex Contractors 109,project_site,terr-ampang,sp-ampang,3.181803,101.730029,3,9099.65,10624.41,90,0.899
+cust-0110,Bintang Site Services 110,maintenance,terr-ampang,sp-ampang,3.154521,101.711599,4,11152.42,4169.78,73,0.859
+cust-0111,Cahaya Project Supply 111,contractor,terr-ampang,sp-ampang,3.177754,101.778114,4,15341.34,4300.32,76,0.95
+cust-0112,Delta Trading 112,distributor,terr-ampang,sp-ampang,3.158242,101.765407,3,2045.84,2203.59,96,0.87
+cust-0113,Eagle Construction 113,project_site,terr-ampang,sp-ampang,3.153464,101.786093,5,8732.22,4065.85,95,0.95
+cust-0114,Fortis Engineering 114,contractor,terr-ampang,sp-ampang,3.121185,101.78461,2,8508.92,14290.45,88,0.745
+cust-0115,Gemilang Industrial 115,project_site,terr-ampang,sp-ampang,3.174398,101.733207,2,9840.12,10636.92,11,0.4
+cust-0116,Harapan Buildmart 116,maintenance,terr-ampang,sp-ampang,3.122757,101.777695,5,13454.84,7704.69,40,0.95
+cust-0117,Ikon Contractors 117,maintenance,terr-ampang,sp-ampang,3.198576,101.764975,3,5701.36,5919.88,53,0.678
+cust-0118,Jaya Site Services 118,contractor,terr-ampang,sp-ampang,3.188926,101.760788,3,3361.81,4190.35,52,0.719
+cust-0119,Kencana Project Supply 119,contractor,terr-ampang,sp-ampang,3.158573,101.71651,2,8857.56,11277.9,85,0.796
+cust-0120,Metro Trading 120,maintenance,terr-ampang,sp-ampang,3.123496,101.750119,3,14336.77,6043.92,57,0.772
+cust-0121,Apex Construction 121,maintenance,terr-ampang,sp-ampang,3.114049,101.794795,3,2240.71,3380.54,110,0.949
+cust-0122,Bintang Engineering 122,distributor,terr-ampang,sp-ampang,3.159332,101.728937,2,12580.38,15445.82,74,0.741
+cust-0123,Cahaya Industrial 123,maintenance,terr-ampang,sp-ampang,3.153505,101.749261,1,9373.69,11966.49,91,0.648
+cust-0124,Delta Buildmart 124,project_site,terr-ampang,sp-ampang,3.138303,101.739011,2,5002.1,5583.44,15,0.38
+cust-0125,Eagle Contractors 125,contractor,terr-ampang,sp-ampang,3.139989,101.735947,1,7164.02,2408.1,65,0.494
+cust-0126,Fortis Site Services 126,project_site,terr-ampang,sp-ampang,3.13507,101.783512,4,8619.48,9093.13,25,0.786
+cust-0127,Gemilang Project Supply 127,contractor,terr-ampang,sp-ampang,3.161455,101.808156,3,5729.07,5958.08,20,0.582
+cust-0128,Harapan Trading 128,distributor,terr-ampang,sp-ampang,3.149133,101.748237,2,8284.78,14090.96,37,0.465
+cust-0129,Ikon Construction 129,contractor,terr-ampang,sp-ampang,3.176103,101.785295,5,16041.54,13562.19,66,0.95
+cust-0130,Jaya Engineering 130,project_site,terr-ampang,sp-ampang,3.178681,101.790711,3,8762.7,7414.14,52,0.638
+cust-0131,Kencana Industrial 131,project_site,terr-ampang,sp-ampang,3.183891,101.747372,3,7998.73,10710.69,87,0.769
+cust-0132,Metro Buildmart 132,maintenance,terr-ampang,sp-ampang,3.184,101.783159,2,5482.31,2746.89,104,0.784
+cust-0133,Apex Contractors 133,project_site,terr-ampang,sp-ampang,3.143408,101.747867,4,13626.25,6497.47,92,0.95
+cust-0134,Bintang Site Services 134,maintenance,terr-ampang,sp-ampang,3.161582,101.777164,3,10096.48,9206.09,109,0.863
+cust-0135,Cahaya Project Supply 135,maintenance,terr-ampang,sp-ampang,3.139663,101.778891,4,12577.17,21715.88,68,0.842
+cust-0136,Delta Trading 136,maintenance,terr-ampang,sp-ampang,3.180435,101.795934,3,11743.67,17278.21,24,0.533
+cust-0137,Eagle Construction 137,distributor,terr-ampang,sp-ampang,3.129305,101.749504,5,3893.07,3176.9,97,0.95
+cust-0138,Fortis Engineering 138,distributor,terr-ampang,sp-ampang,3.13769,101.742685,3,7294.76,3722.41,29,0.608
+cust-0139,Gemilang Industrial 139,project_site,terr-ampang,sp-ampang,3.148732,101.780763,2,3308.58,1253.02,109,0.857
+cust-0140,Harapan Buildmart 140,maintenance,terr-ampang,sp-ampang,3.122256,101.763763,4,5016.03,4828.82,47,0.766
+cust-0141,Ikon Contractors 141,contractor,terr-ampang,sp-ampang,3.146605,101.716933,2,12355.44,21105.12,18,0.506
+cust-0142,Jaya Site Services 142,project_site,terr-ampang,sp-ampang,3.152126,101.756872,2,10182.11,10083.68,101,0.763
+cust-0143,Kencana Project Supply 143,distributor,terr-ampang,sp-ampang,3.113192,101.754282,5,8554.22,13680.61,50,0.95
+cust-0144,Metro Trading 144,project_site,terr-ampang,sp-ampang,3.114068,101.760977,3,4942.29,8791.39,52,0.731
+cust-0145,Apex Construction 145,contractor,terr-ampang,sp-ampang,3.147862,101.730193,5,8355.39,6663.96,11,0.792
+cust-0146,Bintang Engineering 146,contractor,terr-ampang,sp-ampang,3.164235,101.767807,1,4109.78,3036.03,24,0.325
+cust-0147,Cahaya Industrial 147,distributor,terr-ampang,sp-ampang,3.132611,101.72409,4,15268.25,13675.73,58,0.796
+cust-0148,Delta Buildmart 148,project_site,terr-ampang,sp-ampang,3.131255,101.73634,3,2970.3,3365.42,21,0.664
+cust-0149,Eagle Contractors 149,maintenance,terr-ampang,sp-ampang,3.165619,101.737112,3,12551.22,2767.65,29,0.664
+cust-0150,Fortis Site Services 150,distributor,terr-ampang,sp-ampang,3.165368,101.747842,5,7730.18,10328.48,73,0.95
+cust-0151,Gemilang Project Supply 151,project_site,terr-ampang,sp-ampang,3.11255,101.744813,5,14640.81,22205.41,98,0.95
+cust-0152,Harapan Trading 152,distributor,terr-ampang,sp-ampang,3.159218,101.775619,2,2217.06,3736.37,36,0.462
+cust-0153,Ikon Construction 153,maintenance,terr-ampang,sp-ampang,3.136309,101.800708,5,2437.72,2153.29,19,0.783
+cust-0154,Jaya Engineering 154,maintenance,terr-ampang,sp-ampang,3.194946,101.746919,2,7099.06,3566.1,72,0.713
+cust-0155,Kencana Industrial 155,project_site,terr-ampang,sp-ampang,3.15754,101.713309,2,4997.94,3168.72,62,0.632
+cust-0156,Metro Buildmart 156,project_site,terr-ampang,sp-ampang,3.117177,101.783147,4,9416.19,10080.23,54,0.789
+cust-0157,Apex Contractors 157,distributor,terr-ampang,sp-ampang,3.126196,101.75434,4,4940.21,6933.67,95,0.95
+cust-0158,Bintang Site Services 158,maintenance,terr-ampang,sp-ampang,3.143439,101.741411,3,14962.32,18829.3,89,0.928
+cust-0159,Cahaya Project Supply 159,maintenance,terr-ampang,sp-ampang,3.170378,101.780524,2,7600.85,12513.6,82,0.701
+cust-0160,Delta Trading 160,contractor,terr-ampang,sp-ampang,3.149941,101.766676,3,2796.52,4310.27,63,0.703
+cust-0161,Eagle Construction 161,project_site,terr-pj,sp-pj,3.104764,101.66431,3,11101.25,14436.57,39,0.73
+cust-0162,Fortis Engineering 162,contractor,terr-pj,sp-pj,3.085121,101.602749,5,11074.2,10958.85,19,0.821
+cust-0163,Gemilang Industrial 163,maintenance,terr-pj,sp-pj,3.135573,101.622248,3,6965.04,7668.32,76,0.849
+cust-0164,Harapan Buildmart 164,project_site,terr-pj,sp-pj,3.110086,101.559521,4,8432.48,2742.12,114,0.95
+cust-0165,Ikon Contractors 165,project_site,terr-pj,sp-pj,3.106415,101.574692,2,2563.36,2429.71,28,0.505
+cust-0166,Jaya Site Services 166,contractor,terr-pj,sp-pj,3.107429,101.620254,5,11202.93,8687.21,57,0.95
+cust-0167,Kencana Project Supply 167,project_site,terr-pj,sp-pj,3.085044,101.571313,5,8333.14,10560.39,89,0.95
+cust-0168,Metro Trading 168,maintenance,terr-pj,sp-pj,3.147798,101.639122,2,3018.7,4451.1,95,0.816
+cust-0169,Apex Construction 169,distributor,terr-pj,sp-pj,3.083521,101.654097,4,4156.08,2999.11,31,0.663
+cust-0170,Bintang Engineering 170,maintenance,terr-pj,sp-pj,3.099554,101.602328,3,2114.63,2070.38,29,0.648
+cust-0171,Cahaya Industrial 171,distributor,terr-pj,sp-pj,3.149724,101.575508,3,9309.1,11982.4,24,0.614
+cust-0172,Delta Buildmart 172,distributor,terr-pj,sp-pj,3.060241,101.616649,4,9543.24,6934.73,48,0.851
+cust-0173,Eagle Contractors 173,distributor,terr-pj,sp-pj,3.145553,101.637897,3,5738.26,3612.88,28,0.582
+cust-0174,Fortis Site Services 174,contractor,terr-pj,sp-pj,3.148969,101.639467,2,11325.96,11850.57,96,0.816
+cust-0175,Gemilang Project Supply 175,maintenance,terr-pj,sp-pj,3.12268,101.570843,2,10671.89,12861.69,101,0.823
+cust-0176,Harapan Trading 176,contractor,terr-pj,sp-pj,3.134934,101.582532,4,7230.64,10576.36,50,0.827
+cust-0177,Ikon Construction 177,project_site,terr-pj,sp-pj,3.128367,101.564838,4,7498.95,12451.59,97,0.95
+cust-0178,Jaya Engineering 178,distributor,terr-pj,sp-pj,3.100174,101.663833,5,3020.41,4832.0,96,0.95
+cust-0179,Kencana Industrial 179,contractor,terr-pj,sp-pj,3.10243,101.576851,4,15865.94,12885.24,87,0.95
+cust-0180,Metro Buildmart 180,contractor,terr-pj,sp-pj,3.14071,101.577479,2,9038.36,8246.39,8,0.41
+cust-0181,Apex Contractors 181,project_site,terr-pj,sp-pj,3.100676,101.58573,3,3100.59,2387.4,91,0.821
+cust-0182,Bintang Site Services 182,contractor,terr-pj,sp-pj,3.143769,101.596462,4,14287.44,17675.67,13,0.604
+cust-0183,Cahaya Project Supply 183,distributor,terr-pj,sp-pj,3.064032,101.635152,3,8910.39,9460.06,39,0.733
+cust-0184,Delta Trading 184,project_site,terr-pj,sp-pj,3.138999,101.589204,3,2418.09,2037.97,39,0.732
+cust-0185,Eagle Construction 185,distributor,terr-pj,sp-pj,3.143542,101.610285,4,4537.13,2916.84,82,0.924
+cust-0186,Fortis Engineering 186,project_site,terr-pj,sp-pj,3.1475,101.573131,3,12994.17,21736.58,18,0.555
+cust-0187,Gemilang Industrial 187,contractor,terr-pj,sp-pj,3.07459,101.624005,1,5175.22,2280.27,43,0.467
+cust-0188,Harapan Buildmart 188,distributor,terr-pj,sp-pj,3.086391,101.571023,3,8738.15,10636.92,44,0.644
+cust-0189,Ikon Contractors 189,distributor,terr-pj,sp-pj,3.057478,101.585314,3,14089.05,3796.25,93,0.838
+cust-0190,Jaya Site Services 190,distributor,terr-pj,sp-pj,3.118651,101.610915,5,1809.5,2990.62,31,0.869
+cust-0191,Kencana Project Supply 191,distributor,terr-pj,sp-pj,3.112163,101.586327,2,9464.74,6761.58,40,0.496
+cust-0192,Metro Trading 192,distributor,terr-pj,sp-pj,3.080971,101.562875,3,13721.12,12239.46,33,0.674
+cust-0193,Apex Construction 193,distributor,terr-pj,sp-pj,3.116327,101.590519,3,11365.34,19968.15,104,0.885
+cust-0194,Bintang Engineering 194,contractor,terr-pj,sp-pj,3.156559,101.588962,3,13426.05,14565.89,110,0.936
+cust-0195,Cahaya Industrial 195,maintenance,terr-pj,sp-pj,3.107935,101.606857,4,14834.01,8823.87,78,0.95
+cust-0196,Delta Buildmart 196,maintenance,terr-pj,sp-pj,3.096572,101.616194,4,9340.13,10652.83,113,0.95
+cust-0197,Eagle Contractors 197,maintenance,terr-pj,sp-pj,3.065688,101.572452,4,7288.98,7004.45,61,0.909
+cust-0198,Fortis Site Services 198,maintenance,terr-pj,sp-pj,3.128785,101.656057,5,8035.93,10489.91,61,0.95
+cust-0199,Gemilang Project Supply 199,maintenance,terr-pj,sp-pj,3.120602,101.569668,4,2753.02,940.01,35,0.744
+cust-0200,Harapan Trading 200,distributor,terr-pj,sp-pj,3.081861,101.646274,3,8449.79,4919.6,5,0.564
+cust-0201,Ikon Construction 201,contractor,terr-pj,sp-pj,3.096239,101.604608,1,5130.95,8302.35,106,0.639
+cust-0202,Jaya Engineering 202,maintenance,terr-pj,sp-pj,3.096925,101.613465,4,9710.09,13285.76,69,0.835
+cust-0203,Kencana Industrial 203,maintenance,terr-pj,sp-pj,3.056725,101.613037,3,9940.53,14517.11,100,0.893
+cust-0204,Metro Buildmart 204,project_site,terr-pj,sp-pj,3.102737,101.57649,4,12814.92,8484.88,103,0.95
+cust-0205,Apex Contractors 205,distributor,terr-pj,sp-pj,3.134165,101.590327,4,15217.16,13391.87,56,0.765
+cust-0206,Bintang Site Services 206,maintenance,terr-pj,sp-pj,3.082211,101.604079,3,11013.34,7268.88,103,0.932
+cust-0207,Cahaya Project Supply 207,contractor,terr-pj,sp-pj,3.082424,101.577449,5,4553.49,2982.93,35,0.937
+cust-0208,Delta Trading 208,distributor,terr-pj,sp-pj,3.098951,101.621695,5,3563.26,1429.7,117,0.95
+cust-0209,Eagle Construction 209,distributor,terr-pj,sp-pj,3.088114,101.602405,4,7492.26,12472.76,70,0.871
+cust-0210,Fortis Engineering 210,distributor,terr-pj,sp-pj,3.144606,101.620992,3,8067.0,8695.75,88,0.791
+cust-0211,Gemilang Industrial 211,project_site,terr-pj,sp-pj,3.139232,101.604174,3,3079.85,2710.47,54,0.744
+cust-0212,Harapan Buildmart 212,distributor,terr-pj,sp-pj,3.072373,101.573715,2,8863.79,10334.81,104,0.774
+cust-0213,Ikon Contractors 213,maintenance,terr-pj,sp-pj,3.079472,101.647218,3,12069.22,11828.12,19,0.541
+cust-0214,Jaya Site Services 214,maintenance,terr-pj,sp-pj,3.069768,101.617054,2,2291.5,538.18,120,0.868
+cust-0215,Kencana Project Supply 215,distributor,terr-pj,sp-pj,3.097323,101.601761,5,9685.15,4707.12,43,0.925
+cust-0216,Metro Trading 216,distributor,terr-pj,sp-pj,3.148029,101.639081,3,9353.78,16360.65,76,0.862
+cust-0217,Apex Construction 217,project_site,terr-pj,sp-pj,3.103005,101.558038,4,6368.64,2975.8,14,0.709
+cust-0218,Bintang Engineering 218,project_site,terr-pj,sp-pj,3.075399,101.613567,4,15586.2,14232.34,38,0.783
+cust-0219,Cahaya Industrial 219,maintenance,terr-pj,sp-pj,3.086677,101.619709,2,10728.87,10461.72,71,0.736
+cust-0220,Delta Buildmart 220,maintenance,terr-pj,sp-pj,3.077049,101.648532,2,8542.03,2446.19,79,0.712
+cust-0221,Eagle Contractors 221,project_site,terr-pj,sp-pj,3.126582,101.570972,4,12978.8,8315.04,53,0.781
+cust-0222,Fortis Site Services 222,distributor,terr-pj,sp-pj,3.059513,101.582311,3,5632.15,4295.75,35,0.681
+cust-0223,Gemilang Project Supply 223,contractor,terr-pj,sp-pj,3.137745,101.598955,2,12227.36,11317.12,35,0.575
+cust-0224,Harapan Trading 224,contractor,terr-pj,sp-pj,3.114008,101.62458,3,6876.67,10032.19,11,0.536
+cust-0225,Ikon Construction 225,project_site,terr-pj,sp-pj,3.108966,101.573169,4,6972.42,10308.32,49,0.757
+cust-0226,Jaya Engineering 226,maintenance,terr-pj,sp-pj,3.111853,101.550077,2,9290.07,12066.99,105,0.857
+cust-0227,Kencana Industrial 227,distributor,terr-pj,sp-pj,3.120491,101.645621,4,8851.61,14511.7,113,0.95
+cust-0228,Metro Buildmart 228,distributor,terr-pj,sp-pj,3.091961,101.552637,3,6968.76,2894.86,78,0.744
+cust-0229,Apex Contractors 229,contractor,terr-pj,sp-pj,3.148848,101.623882,4,5392.23,3367.5,101,0.95
+cust-0230,Bintang Site Services 230,project_site,terr-pj,sp-pj,3.102091,101.578686,3,8965.0,9950.45,110,0.917
+cust-0231,Cahaya Project Supply 231,project_site,terr-pj,sp-pj,3.116175,101.609644,5,2576.96,3739.13,82,0.95
+cust-0232,Delta Trading 232,maintenance,terr-pj,sp-pj,3.114574,101.661319,4,14037.53,6646.47,34,0.68
+cust-0233,Eagle Construction 233,contractor,terr-pj,sp-pj,3.111746,101.58266,4,7950.81,2269.1,120,0.95
+cust-0234,Fortis Engineering 234,project_site,terr-pj,sp-pj,3.138562,101.647646,5,7284.97,12646.42,17,0.768
+cust-0235,Gemilang Industrial 235,project_site,terr-pj,sp-pj,3.089412,101.595182,2,6915.66,7256.62,52,0.564
+cust-0236,Harapan Buildmart 236,project_site,terr-pj,sp-pj,3.092181,101.590645,4,3117.79,3870.01,17,0.753
+cust-0237,Ikon Contractors 237,project_site,terr-pj,sp-pj,3.152838,101.620275,2,6111.05,4669.92,69,0.626
+cust-0238,Jaya Site Services 238,maintenance,terr-pj,sp-pj,3.115712,101.558132,4,6096.8,8708.52,28,0.655
+cust-0239,Kencana Project Supply 239,project_site,terr-pj,sp-pj,3.063185,101.63103,5,14127.62,22413.83,23,0.792
+cust-0240,Metro Trading 240,contractor,terr-pj,sp-pj,3.117733,101.636554,3,11862.48,16427.47,9,0.587
+cust-0241,Apex Construction 241,contractor,terr-shah-alam,sp-shah-alam,3.104062,101.488655,3,14002.93,8595.59,73,0.867
+cust-0242,Bintang Engineering 242,project_site,terr-shah-alam,sp-shah-alam,3.033629,101.547759,1,3218.62,2679.26,21,0.355
+cust-0243,Cahaya Industrial 243,contractor,terr-shah-alam,sp-shah-alam,3.115513,101.487221,3,11417.53,9177.26,114,0.95
+cust-0244,Delta Buildmart 244,project_site,terr-shah-alam,sp-shah-alam,3.124747,101.484096,4,8393.97,7384.91,33,0.754
+cust-0245,Eagle Contractors 245,contractor,terr-shah-alam,sp-shah-alam,3.075389,101.463807,3,4768.68,4189.96,56,0.764
+cust-0246,Fortis Site Services 246,maintenance,terr-shah-alam,sp-shah-alam,3.126117,101.497838,3,8634.48,12499.66,67,0.69
+cust-0247,Gemilang Project Supply 247,maintenance,terr-shah-alam,sp-shah-alam,3.023343,101.488992,3,3184.66,5406.22,65,0.741
+cust-0248,Harapan Trading 248,distributor,terr-shah-alam,sp-shah-alam,3.105032,101.548239,4,4239.16,5733.04,98,0.95
+cust-0249,Ikon Construction 249,contractor,terr-shah-alam,sp-shah-alam,3.079979,101.487373,2,12242.0,15997.81,61,0.64
+cust-0250,Jaya Engineering 250,project_site,terr-shah-alam,sp-shah-alam,3.117886,101.481596,3,4411.77,5774.22,69,0.73
+cust-0251,Kencana Industrial 251,project_site,terr-shah-alam,sp-shah-alam,3.111376,101.533539,5,10039.48,7042.36,20,0.834
+cust-0252,Metro Buildmart 252,contractor,terr-shah-alam,sp-shah-alam,3.065816,101.481873,1,2243.18,452.12,111,0.792
+cust-0253,Apex Contractors 253,contractor,terr-shah-alam,sp-shah-alam,3.035635,101.487292,3,14791.14,24141.03,100,0.851
+cust-0254,Bintang Site Services 254,distributor,terr-shah-alam,sp-shah-alam,3.04739,101.522187,3,7535.84,12813.12,47,0.676
+cust-0255,Cahaya Project Supply 255,project_site,terr-shah-alam,sp-shah-alam,3.113226,101.566078,2,5875.01,7393.37,114,0.905
+cust-0256,Delta Trading 256,contractor,terr-shah-alam,sp-shah-alam,3.039638,101.534657,3,7153.79,9463.13,91,0.82
+cust-0257,Eagle Construction 257,distributor,terr-shah-alam,sp-shah-alam,3.113611,101.529871,5,11829.63,10717.82,107,0.95
+cust-0258,Fortis Engineering 258,contractor,terr-shah-alam,sp-shah-alam,3.017055,101.511329,1,11901.11,8849.09,93,0.654
+cust-0259,Gemilang Industrial 259,maintenance,terr-shah-alam,sp-shah-alam,3.09437,101.542373,2,3361.09,5960.62,30,0.478
+cust-0260,Harapan Buildmart 260,project_site,terr-shah-alam,sp-shah-alam,3.079305,101.490622,2,13498.76,13950.54,26,0.517
+cust-0261,Ikon Contractors 261,maintenance,terr-shah-alam,sp-shah-alam,3.055065,101.558667,4,5472.36,7697.6,96,0.95
+cust-0262,Jaya Site Services 262,distributor,terr-shah-alam,sp-shah-alam,3.101916,101.575049,4,7718.1,9586.21,87,0.942
+cust-0263,Kencana Project Supply 263,distributor,terr-shah-alam,sp-shah-alam,3.123375,101.511248,3,14760.17,21977.79,118,0.95
+cust-0264,Metro Trading 264,distributor,terr-shah-alam,sp-shah-alam,3.08109,101.541055,3,11390.41,18164.25,15,0.593
+cust-0265,Apex Construction 265,contractor,terr-shah-alam,sp-shah-alam,3.076975,101.475195,3,3429.37,2712.49,10,0.61
+cust-0266,Bintang Engineering 266,maintenance,terr-shah-alam,sp-shah-alam,3.100923,101.558475,2,5768.42,7317.71,70,0.696
+cust-0267,Cahaya Industrial 267,maintenance,terr-shah-alam,sp-shah-alam,3.10632,101.469067,4,9892.21,15435.67,83,0.943
+cust-0268,Delta Buildmart 268,project_site,terr-shah-alam,sp-shah-alam,3.032194,101.541063,4,5131.23,1050.06,115,0.95
+cust-0269,Eagle Contractors 269,contractor,terr-shah-alam,sp-shah-alam,3.106768,101.536529,2,3459.38,6018.27,62,0.614
+cust-0270,Fortis Site Services 270,distributor,terr-shah-alam,sp-shah-alam,3.123194,101.506409,4,3424.83,941.27,11,0.63
+cust-0271,Gemilang Project Supply 271,maintenance,terr-shah-alam,sp-shah-alam,3.075939,101.558791,2,2008.02,2313.73,27,0.575
+cust-0272,Harapan Trading 272,project_site,terr-shah-alam,sp-shah-alam,3.049821,101.47393,5,14761.1,18767.93,15,0.754
+cust-0273,Ikon Construction 273,distributor,terr-shah-alam,sp-shah-alam,3.038928,101.562329,4,15366.32,19179.78,54,0.898
+cust-0274,Jaya Engineering 274,maintenance,terr-shah-alam,sp-shah-alam,3.088929,101.465169,4,7080.86,7083.88,28,0.715
+cust-0275,Kencana Industrial 275,maintenance,terr-shah-alam,sp-shah-alam,3.104062,101.488635,4,4822.32,1789.92,110,0.95
+cust-0276,Metro Buildmart 276,project_site,terr-shah-alam,sp-shah-alam,3.064926,101.501812,3,12364.6,7212.58,81,0.858
+cust-0277,Apex Contractors 277,maintenance,terr-shah-alam,sp-shah-alam,3.103437,101.490464,4,11233.37,18121.86,37,0.73
+cust-0278,Bintang Site Services 278,project_site,terr-shah-alam,sp-shah-alam,3.052821,101.496879,5,16516.62,21105.52,67,0.95
+cust-0279,Cahaya Project Supply 279,distributor,terr-shah-alam,sp-shah-alam,3.119535,101.523368,4,13261.1,4288.64,120,0.95
+cust-0280,Delta Trading 280,distributor,terr-shah-alam,sp-shah-alam,3.068163,101.535269,3,5725.13,7039.34,35,0.663
+cust-0281,Eagle Construction 281,contractor,terr-shah-alam,sp-shah-alam,3.045929,101.528677,3,14913.62,9503.51,65,0.786
+cust-0282,Fortis Engineering 282,project_site,terr-shah-alam,sp-shah-alam,3.04337,101.5407,4,4187.38,2030.53,7,0.608
+cust-0283,Gemilang Industrial 283,maintenance,terr-shah-alam,sp-shah-alam,3.079359,101.515464,5,3228.7,3292.47,24,0.815
+cust-0284,Harapan Buildmart 284,contractor,terr-shah-alam,sp-shah-alam,3.119411,101.523529,4,8078.68,11054.97,37,0.788
+cust-0285,Ikon Contractors 285,contractor,terr-shah-alam,sp-shah-alam,3.045146,101.511899,3,2903.57,4078.23,6,0.561
+cust-0286,Jaya Site Services 286,project_site,terr-shah-alam,sp-shah-alam,3.109457,101.464725,4,14482.15,10871.75,92,0.934
+cust-0287,Kencana Project Supply 287,distributor,terr-shah-alam,sp-shah-alam,3.068915,101.564525,4,7076.17,2846.51,55,0.826
+cust-0288,Metro Trading 288,distributor,terr-shah-alam,sp-shah-alam,3.032104,101.478095,4,12622.56,9424.17,18,0.702
+cust-0289,Apex Construction 289,distributor,terr-shah-alam,sp-shah-alam,3.090944,101.562543,5,4977.73,1209.86,78,0.95
+cust-0290,Bintang Engineering 290,distributor,terr-shah-alam,sp-shah-alam,3.101681,101.494312,1,9563.03,14175.05,111,0.784
+cust-0291,Cahaya Industrial 291,maintenance,terr-shah-alam,sp-shah-alam,3.090232,101.473612,5,10262.06,14749.0,21,0.868
+cust-0292,Delta Buildmart 292,distributor,terr-shah-alam,sp-shah-alam,3.094735,101.472703,2,7692.17,7179.15,10,0.459
+cust-0293,Eagle Contractors 293,contractor,terr-shah-alam,sp-shah-alam,3.067274,101.50419,5,3545.84,3315.13,59,0.9
+cust-0294,Fortis Site Services 294,contractor,terr-shah-alam,sp-shah-alam,3.08651,101.46534,4,4179.61,4415.54,92,0.95
+cust-0295,Gemilang Project Supply 295,project_site,terr-shah-alam,sp-shah-alam,3.08199,101.523136,3,8825.16,3315.55,44,0.715
+cust-0296,Harapan Trading 296,project_site,terr-shah-alam,sp-shah-alam,3.034158,101.468298,4,14944.97,21453.97,46,0.779
+cust-0297,Ikon Construction 297,contractor,terr-shah-alam,sp-shah-alam,3.068105,101.539558,2,12478.6,8588.2,89,0.82
+cust-0298,Jaya Engineering 298,contractor,terr-shah-alam,sp-shah-alam,3.038183,101.563093,5,2551.07,1038.2,99,0.95
+cust-0299,Kencana Industrial 299,project_site,terr-shah-alam,sp-shah-alam,3.060353,101.499488,4,3438.3,1118.48,38,0.744
+cust-0300,Metro Buildmart 300,distributor,terr-shah-alam,sp-shah-alam,3.064456,101.533591,4,4439.63,4286.42,52,0.742
+cust-0301,Apex Contractors 301,distributor,terr-shah-alam,sp-shah-alam,3.026023,101.491539,5,13525.62,17475.21,5,0.7
+cust-0302,Bintang Site Services 302,distributor,terr-shah-alam,sp-shah-alam,3.099757,101.487622,5,7376.04,6741.02,59,0.95
+cust-0303,Cahaya Project Supply 303,maintenance,terr-shah-alam,sp-shah-alam,3.107418,101.507474,5,8426.05,2489.09,45,0.95
+cust-0304,Delta Trading 304,project_site,terr-shah-alam,sp-shah-alam,3.085676,101.547293,3,2245.4,2685.08,16,0.573
+cust-0305,Eagle Construction 305,contractor,terr-shah-alam,sp-shah-alam,3.135945,101.525152,4,8035.21,3340.33,24,0.637
+cust-0306,Fortis Engineering 306,distributor,terr-shah-alam,sp-shah-alam,3.040693,101.514334,5,13307.0,14114.27,8,0.69
+cust-0307,Gemilang Industrial 307,maintenance,terr-shah-alam,sp-shah-alam,3.009952,101.518831,2,6979.62,2663.84,70,0.749
+cust-0308,Harapan Buildmart 308,contractor,terr-shah-alam,sp-shah-alam,3.10993,101.527864,3,12402.09,15445.58,10,0.473
+cust-0309,Ikon Contractors 309,distributor,terr-shah-alam,sp-shah-alam,3.075411,101.475615,5,11668.54,16275.09,85,0.95
+cust-0310,Jaya Site Services 310,distributor,terr-shah-alam,sp-shah-alam,3.102547,101.487263,3,4762.52,5845.11,70,0.72
+cust-0311,Kencana Project Supply 311,contractor,terr-shah-alam,sp-shah-alam,3.041268,101.503866,4,9414.75,10297.6,92,0.897
+cust-0312,Metro Trading 312,distributor,terr-shah-alam,sp-shah-alam,3.107756,101.562872,5,4984.36,6899.46,28,0.838
+cust-0313,Apex Construction 313,project_site,terr-shah-alam,sp-shah-alam,3.05229,101.490865,3,13720.33,7544.88,13,0.566
+cust-0314,Bintang Engineering 314,project_site,terr-shah-alam,sp-shah-alam,3.093128,101.520066,2,2387.05,2922.53,111,0.838
+cust-0315,Cahaya Industrial 315,contractor,terr-shah-alam,sp-shah-alam,3.036807,101.518714,3,14148.63,21213.77,86,0.803
+cust-0316,Delta Buildmart 316,project_site,terr-shah-alam,sp-shah-alam,3.093646,101.488307,2,4504.11,1687.28,53,0.537
+cust-0317,Eagle Contractors 317,maintenance,terr-shah-alam,sp-shah-alam,3.101316,101.548427,5,7485.05,2965.84,34,0.93
+cust-0318,Fortis Site Services 318,project_site,terr-shah-alam,sp-shah-alam,3.057018,101.540158,4,8898.36,5353.94,76,0.851
+cust-0319,Gemilang Project Supply 319,project_site,terr-shah-alam,sp-shah-alam,3.129129,101.5059,3,5542.21,7170.88,102,0.849
+cust-0320,Harapan Trading 320,project_site,terr-shah-alam,sp-shah-alam,3.0631,101.568776,5,16637.84,29027.4,22,0.8
+cust-0321,Ikon Construction 321,distributor,terr-cheras,sp-cheras,3.121081,101.68954,1,9927.68,13263.08,31,0.364
+cust-0322,Jaya Engineering 322,maintenance,terr-cheras,sp-cheras,3.13698,101.735262,3,13971.37,15388.46,75,0.811
+cust-0323,Kencana Industrial 323,maintenance,terr-cheras,sp-cheras,3.084137,101.696095,3,4194.18,3540.35,70,0.759
+cust-0324,Metro Buildmart 324,project_site,terr-cheras,sp-cheras,3.095642,101.776973,2,5328.32,3119.54,66,0.725
+cust-0325,Apex Contractors 325,maintenance,terr-cheras,sp-cheras,3.118309,101.776968,2,6817.31,3712.27,48,0.623
+cust-0326,Bintang Site Services 326,distributor,terr-cheras,sp-cheras,3.11757,101.687413,3,11381.16,15437.24,85,0.822
+cust-0327,Cahaya Project Supply 327,distributor,terr-cheras,sp-cheras,3.100622,101.709074,3,3756.89,6032.32,27,0.597
+cust-0328,Delta Trading 328,project_site,terr-cheras,sp-cheras,3.090102,101.724885,2,8396.98,7138.56,69,0.729
+cust-0329,Eagle Construction 329,maintenance,terr-cheras,sp-cheras,3.133785,101.769811,1,9821.91,7799.31,113,0.776
+cust-0330,Fortis Engineering 330,distributor,terr-cheras,sp-cheras,3.143078,101.693398,4,6756.5,10484.17,79,0.939
+cust-0331,Gemilang Industrial 331,contractor,terr-cheras,sp-cheras,3.106093,101.731766,4,7838.26,8334.19,37,0.781
+cust-0332,Harapan Buildmart 332,project_site,terr-cheras,sp-cheras,3.068271,101.704327,4,3391.48,5735.93,108,0.95
+cust-0333,Ikon Contractors 333,maintenance,terr-cheras,sp-cheras,3.056225,101.720288,3,8339.78,4895.96,46,0.68
+cust-0334,Jaya Site Services 334,maintenance,terr-cheras,sp-cheras,3.084868,101.728301,4,3061.37,4350.8,23,0.694
+cust-0335,Kencana Project Supply 335,maintenance,terr-cheras,sp-cheras,3.087363,101.699774,3,11292.17,8578.35,103,0.92
+cust-0336,Metro Trading 336,contractor,terr-cheras,sp-cheras,3.110282,101.747804,2,4750.35,5418.5,71,0.641
+cust-0337,Apex Construction 337,maintenance,terr-cheras,sp-cheras,3.097792,101.727075,4,1760.18,2980.98,14,0.748
+cust-0338,Bintang Engineering 338,project_site,terr-cheras,sp-cheras,3.105719,101.74998,3,8433.92,13149.46,58,0.676
+cust-0339,Cahaya Industrial 339,project_site,terr-cheras,sp-cheras,3.0961,101.719513,4,3377.52,4758.91,85,0.95
+cust-0340,Delta Buildmart 340,maintenance,terr-cheras,sp-cheras,3.083417,101.717469,3,2250.18,798.51,18,0.514
+cust-0341,Eagle Contractors 341,project_site,terr-cheras,sp-cheras,3.112626,101.730197,5,10564.69,4034.3,7,0.765
+cust-0342,Fortis Site Services 342,distributor,terr-cheras,sp-cheras,3.080476,101.743376,4,11165.22,16540.29,80,0.95
+cust-0343,Gemilang Project Supply 343,project_site,terr-cheras,sp-cheras,3.063342,101.696651,1,6387.78,2946.44,95,0.686
+cust-0344,Harapan Trading 344,distributor,terr-cheras,sp-cheras,3.134072,101.694146,4,9483.05,2024.27,21,0.692
+cust-0345,Ikon Construction 345,contractor,terr-cheras,sp-cheras,3.067365,101.750949,2,9592.49,5081.9,85,0.725
+cust-0346,Jaya Engineering 346,project_site,terr-cheras,sp-cheras,3.121504,101.759053,5,12223.31,6454.82,66,0.927
+cust-0347,Kencana Industrial 347,project_site,terr-cheras,sp-cheras,3.15646,101.719072,4,13431.16,22800.31,52,0.854
+cust-0348,Metro Buildmart 348,contractor,terr-cheras,sp-cheras,3.073408,101.754122,3,2727.04,4504.69,78,0.783
+cust-0349,Apex Contractors 349,project_site,terr-cheras,sp-cheras,3.138934,101.691184,2,3432.05,6159.13,119,0.917
+cust-0350,Bintang Site Services 350,maintenance,terr-cheras,sp-cheras,3.147438,101.719952,3,9504.47,1943.48,89,0.888
+cust-0351,Cahaya Project Supply 351,maintenance,terr-cheras,sp-cheras,3.119868,101.707104,4,3627.86,1305.73,19,0.743
+cust-0352,Delta Trading 352,distributor,terr-cheras,sp-cheras,3.100293,101.711401,2,11442.73,5939.57,100,0.738
+cust-0353,Eagle Construction 353,distributor,terr-cheras,sp-cheras,3.151698,101.723806,3,13194.48,20943.3,10,0.525
+cust-0354,Fortis Engineering 354,maintenance,terr-cheras,sp-cheras,3.078878,101.713168,2,7642.39,10785.47,49,0.606
+cust-0355,Gemilang Industrial 355,contractor,terr-cheras,sp-cheras,3.105095,101.753419,2,9814.35,2040.55,14,0.376
+cust-0356,Harapan Buildmart 356,project_site,terr-cheras,sp-cheras,3.13133,101.74856,5,6705.92,3466.4,77,0.95
+cust-0357,Ikon Contractors 357,project_site,terr-cheras,sp-cheras,3.067594,101.730404,5,6461.68,7039.74,37,0.917
+cust-0358,Jaya Site Services 358,distributor,terr-cheras,sp-cheras,3.107291,101.75904,4,4513.53,6165.04,39,0.844
+cust-0359,Kencana Project Supply 359,contractor,terr-cheras,sp-cheras,3.128485,101.71275,2,9380.28,10418.63,105,0.788
+cust-0360,Metro Trading 360,distributor,terr-cheras,sp-cheras,3.144781,101.721162,2,2151.71,1547.06,40,0.562
+cust-0361,Apex Construction 361,distributor,terr-cheras,sp-cheras,3.069812,101.695407,3,14695.89,15545.94,58,0.808
+cust-0362,Bintang Engineering 362,distributor,terr-cheras,sp-cheras,3.090433,101.725396,2,4077.99,3209.85,7,0.366
+cust-0363,Cahaya Industrial 363,distributor,terr-cheras,sp-cheras,3.066338,101.750179,3,7639.39,3632.62,75,0.739
+cust-0364,Delta Buildmart 364,maintenance,terr-cheras,sp-cheras,3.140509,101.702627,2,6987.17,6339.77,5,0.385
+cust-0365,Eagle Contractors 365,contractor,terr-cheras,sp-cheras,3.127993,101.766288,3,14445.59,23467.25,91,0.798
+cust-0366,Fortis Site Services 366,contractor,terr-cheras,sp-cheras,3.154203,101.703671,4,10437.55,2959.39,58,0.801
+cust-0367,Gemilang Project Supply 367,contractor,terr-cheras,sp-cheras,3.1006,101.752299,3,13954.76,8302.6,59,0.705
+cust-0368,Harapan Trading 368,project_site,terr-cheras,sp-cheras,3.155799,101.718897,4,7672.58,11689.12,54,0.899
+cust-0369,Ikon Construction 369,distributor,terr-cheras,sp-cheras,3.139265,101.72077,5,11292.8,6865.76,111,0.95
+cust-0370,Jaya Engineering 370,maintenance,terr-cheras,sp-cheras,3.129125,101.770779,1,3878.6,3734.11,66,0.47
+cust-0371,Kencana Industrial 371,maintenance,terr-cheras,sp-cheras,3.113297,101.684973,1,4970.23,4350.24,96,0.613
+cust-0372,Metro Buildmart 372,distributor,terr-cheras,sp-cheras,3.094303,101.736477,2,7340.5,13135.44,109,0.894
+cust-0373,Apex Contractors 373,distributor,terr-cheras,sp-cheras,3.065087,101.697539,5,4262.62,4894.13,81,0.95
+cust-0374,Bintang Site Services 374,project_site,terr-cheras,sp-cheras,3.120422,101.741611,2,6501.73,1356.02,106,0.858
+cust-0375,Cahaya Project Supply 375,maintenance,terr-cheras,sp-cheras,3.123733,101.68255,3,13147.35,16406.27,78,0.785
+cust-0376,Delta Trading 376,project_site,terr-cheras,sp-cheras,3.133078,101.704941,3,10090.71,15670.02,66,0.813
+cust-0377,Eagle Construction 377,maintenance,terr-cheras,sp-cheras,3.071534,101.712563,3,9624.06,16323.22,37,0.587
+cust-0378,Fortis Engineering 378,project_site,terr-cheras,sp-cheras,3.086536,101.701699,4,6812.47,2099.55,67,0.877
+cust-0379,Gemilang Industrial 379,distributor,terr-cheras,sp-cheras,3.109208,101.700185,5,12225.99,9869.18,90,0.95
+cust-0380,Harapan Buildmart 380,maintenance,terr-cheras,sp-cheras,3.053769,101.719575,2,8724.92,5373.19,60,0.666
+cust-0381,Ikon Contractors 381,contractor,terr-cheras,sp-cheras,3.065576,101.751446,4,7897.29,1761.63,25,0.762
+cust-0382,Jaya Site Services 382,distributor,terr-cheras,sp-cheras,3.099794,101.767074,4,7446.26,6238.44,5,0.59
+cust-0383,Kencana Project Supply 383,distributor,terr-cheras,sp-cheras,3.092426,101.747412,4,13639.9,6434.97,95,0.95
+cust-0384,Metro Trading 384,contractor,terr-cheras,sp-cheras,3.146757,101.729436,5,5076.45,8821.23,50,0.945
+cust-0385,Apex Construction 385,project_site,terr-cheras,sp-cheras,3.11299,101.74856,3,12766.1,7800.55,98,0.895
+cust-0386,Bintang Engineering 386,maintenance,terr-cheras,sp-cheras,3.069253,101.686362,4,4770.22,2946.54,118,0.95
+cust-0387,Cahaya Industrial 387,project_site,terr-cheras,sp-cheras,3.082058,101.725254,4,2328.67,681.4,24,0.633
+cust-0388,Delta Buildmart 388,project_site,terr-cheras,sp-cheras,3.108478,101.68736,4,4579.93,1730.03,97,0.95
+cust-0389,Eagle Contractors 389,contractor,terr-cheras,sp-cheras,3.118664,101.74597,3,6307.55,7986.3,98,0.859
+cust-0390,Fortis Site Services 390,project_site,terr-cheras,sp-cheras,3.067489,101.737445,2,3632.91,1998.72,94,0.816
+cust-0391,Gemilang Project Supply 391,distributor,terr-cheras,sp-cheras,3.095436,101.674812,4,4759.13,4533.43,10,0.656
+cust-0392,Harapan Trading 392,contractor,terr-cheras,sp-cheras,3.136342,101.708901,4,10602.68,16175.6,101,0.95
+cust-0393,Ikon Construction 393,project_site,terr-cheras,sp-cheras,3.066167,101.756506,5,2700.45,4361.15,19,0.791
+cust-0394,Jaya Engineering 394,distributor,terr-cheras,sp-cheras,3.143019,101.755438,1,8221.38,8606.32,57,0.451
+cust-0395,Kencana Industrial 395,distributor,terr-cheras,sp-cheras,3.12345,101.743178,3,12466.84,10025.82,77,0.738
+cust-0396,Metro Buildmart 396,project_site,terr-cheras,sp-cheras,3.084177,101.751154,5,5789.4,9439.92,95,0.95
+cust-0397,Apex Contractors 397,contractor,terr-cheras,sp-cheras,3.096824,101.770397,4,8408.61,14047.49,95,0.95
+cust-0398,Bintang Site Services 398,contractor,terr-cheras,sp-cheras,3.122137,101.7459,4,5823.0,3440.96,107,0.95
+cust-0399,Cahaya Project Supply 399,project_site,terr-cheras,sp-cheras,3.098183,101.685888,4,5186.63,2705.29,100,0.95
+cust-0400,Delta Trading 400,contractor,terr-cheras,sp-cheras,3.13827,101.742221,4,3500.82,4007.78,54,0.824

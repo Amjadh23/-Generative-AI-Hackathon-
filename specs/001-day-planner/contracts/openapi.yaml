@@ -1,0 +1,152 @@
+openapi: 3.1.0
+info:
+  title: Hilti AI Sales Router API
+  version: 0.1.0
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: Service is healthy
+  /salespeople/{salesperson_id}/day-plan:
+    get:
+      summary: Generate today's optimized visit plan
+      parameters:
+        - name: salesperson_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: start_lat
+          in: query
+          required: false
+          schema:
+            type: number
+        - name: start_lng
+          in: query
+          required: false
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Optimized day plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DayPlan"
+  /customers/{customer_id}:
+    get:
+      summary: Get customer detail and visit history
+      parameters:
+        - name: customer_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Customer detail
+  /visits:
+    post:
+      summary: Log a completed visit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VisitCreate"
+      responses:
+        "201":
+          description: Visit logged
+  /salespeople/{salesperson_id}/territory:
+    get:
+      summary: Get salesperson territory
+      parameters:
+        - name: salesperson_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Territory GeoJSON
+components:
+  schemas:
+    DayPlan:
+      type: object
+      required:
+        - salesperson_id
+        - date
+        - total_expected_return_rm
+        - total_distance_km
+        - stops
+      properties:
+        salesperson_id:
+          type: string
+        date:
+          type: string
+          format: date
+        total_expected_return_rm:
+          type: number
+        total_distance_km:
+          type: number
+        stops:
+          type: array
+          items:
+            $ref: "#/components/schemas/DayPlanStop"
+    DayPlanStop:
+      type: object
+      required:
+        - sequence
+        - customer_id
+        - customer_name
+        - lat
+        - lng
+        - score
+        - expected_return_rm
+        - distance_from_previous_km
+        - eta_minutes
+        - reason
+      properties:
+        sequence:
+          type: integer
+        customer_id:
+          type: string
+        customer_name:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+        score:
+          type: number
+        expected_return_rm:
+          type: number
+        distance_from_previous_km:
+          type: number
+        eta_minutes:
+          type: integer
+        reason:
+          type: string
+    VisitCreate:
+      type: object
+      required:
+        - customer_id
+        - salesperson_id
+        - outcome
+      properties:
+        customer_id:
+          type: string
+        salesperson_id:
+          type: string
+        outcome:
+          type: string
+        notes:
+          type: string
