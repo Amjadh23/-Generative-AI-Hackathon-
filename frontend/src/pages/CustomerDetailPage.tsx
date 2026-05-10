@@ -145,7 +145,13 @@ export function CustomerDetailPage({
             label="Why this score"
             message={
               customer.top_reasons.length > 0
-                ? customer.top_reasons.join(' ')
+                ? (
+                    <ul className="score-reason-list">
+                      {customer.top_reasons.map((reason) => (
+                        <li key={reason}>{reason}</li>
+                      ))}
+                    </ul>
+                  )
                 : `RouteIQ ranked this customer ${Math.round(customer.score)} using visit likelihood from recency, pipeline, order history, and reorder probability (CRM priority ${customer.crm_priority} is not a model input).`
             }
             mood="thinking"

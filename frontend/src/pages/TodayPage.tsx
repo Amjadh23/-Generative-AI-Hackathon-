@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { NavigateIcon } from '../components/Icon'
 import { ImpactCard } from '../components/ImpactCard'
@@ -29,6 +29,11 @@ export function TodayPage({
 }: TodayPageProps) {
   const nextStop = dayPlan?.stops[0]
   const [waving, setWaving] = useState(true)
+  const [visitListMode, setVisitListMode] = useState<'top5' | 'all'>('top5')
+  const visibleStops = useMemo(() => {
+    if (!dayPlan) return []
+    return visitListMode === 'top5' ? dayPlan.stops.slice(0, 5) : dayPlan.stops
+  }, [dayPlan, visitListMode])
 
   useEffect(() => {
     const timer = window.setTimeout(() => setWaving(false), 1700)
@@ -98,11 +103,29 @@ export function TodayPage({
 
           <section aria-label="Recommended visits" className="route-list">
             <div className="section-header">
-              <h2>Visit order</h2>
-              <span>{dayPlan.date}</span>
+              <div>
+                <h2>Visit order</h2>
+                <span>{dayPlan.date}</span>
+              </div>
+              <div aria-label="Visit list filter" className="route-filter">
+                <button
+                  aria-pressed={visitListMode === 'top5'}
+                  onClick={() => setVisitListMode('top5')}
+                  type="button"
+                >
+                  Top 5
+                </button>
+                <button
+                  aria-pressed={visitListMode === 'all'}
+                  onClick={() => setVisitListMode('all')}
+                  type="button"
+                >
+                  All
+                </button>
+              </div>
             </div>
 
-            {dayPlan.stops.map((stop) => (
+            {visibleStops.map((stop) => (
               <StopCard key={stop.customer_id} onSelect={onSelectCustomer} stop={stop} />
             ))}
           </section>

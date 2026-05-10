@@ -23,6 +23,7 @@ from app.core.schemas import (
 from app.data.generate import DEFAULT_OUTPUT, ensure_runtime_schema, seed_database
 from app.llm.client import LLMError
 from app.llm.recap import build_recap
+from app.llm.score_summary import summarize_score_reasons
 from app.ml.score import score_customer
 from app.recommend.service import build_day_plan
 from app.sentiment.service import log_manual_sentiment_visit
@@ -104,6 +105,7 @@ def get_customer(customer_id: str) -> dict[str, object]:
         ).fetchone()
 
     score = score_customer(customer_id, database_path)
+    top_reasons = summarize_score_reasons(tuple(score.top_reasons), limit=3)
     return {
         "id": customer["id"],
         "name": customer["name"],
@@ -123,7 +125,7 @@ def get_customer(customer_id: str) -> dict[str, object]:
         "recommended_action": score.recommended_action,
         "expected_return_rm": score.expected_return_rm,
         "score_contributions": score.contributions,
-        "top_reasons": score.top_reasons,
+        "top_reasons": top_reasons,
         "xgboost_explanation": score.xgboost_explanation_payload,
         "sentiment_initial_confidence_score": (
             sentiment["initial_confidence_score"] if sentiment else 0.5

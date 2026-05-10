@@ -1,7 +1,9 @@
+import type { ReactNode } from 'react'
+
 import { Mascot } from './Mascot'
 
 type MascotTipProps = {
-  message: string
+  message: ReactNode
   label?: string
   mood?: 'idle' | 'happy' | 'thinking'
 }
@@ -14,7 +16,7 @@ export function MascotTip({ label = 'RouteIQ tip', message, mood = 'happy' }: Ma
       </div>
       <div className="mascot-tip-bubble">
         <span className="mascot-tip-label">{label}</span>
-        <p>{message}</p>
+        {typeof message === 'string' ? <p>{message}</p> : message}
       </div>
     </div>
   )
